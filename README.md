@@ -13,7 +13,9 @@ Build slurm rpms at Rocky8
 
 ..to have unpacked pmix here: `tarballs/pmix-3.2.4/`
 
-### modify release number in `tarballs/pmix-3.2.4/contrib/pmix.spec`
+### modify release number 
+
+..in `tarballs/pmix-3.2.4/contrib/pmix.spec`.
 
 release can be eg. YYYYmmDDHHMM etc. Default is `-1`.
 
@@ -35,6 +37,16 @@ apptainer exec ./build-pmix-rocky86.sif rpmbuild --define 'build_all_in_one_rpm 
 
 ```
 apptainer build ./build-slurm-rocky86.sif ./build-slurm-rocky86.def
+```
+
+### modify release number
+
+in `tarballs/slurm-22.05.8/slurm.spec`
+
+### build slurm rpms in apptainer
+
+```
+apptainer exec ./build-slurm-rocky86.sif rpmbuild --define '_with_nvml --with-nvml=/usr/local/cuda/targets/x86_64-linux/' --with pam --with slurmrestd --with hwloc --with lua --with mysql --with numa --with pmix -ba ./tarballs/slurm-22.05.8/slurm.spec
 ```
 
 
