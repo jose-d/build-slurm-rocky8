@@ -1,6 +1,9 @@
 # build-slurm-rocky8
 Build slurm rpms at Rocky8
 
+credits:
+strongly inspired by https://github.com/c3se/containers/tree/master/rpm-builds
+
 
 ### prepare build environment
 
