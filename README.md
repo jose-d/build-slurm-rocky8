@@ -2,11 +2,20 @@
 Build slurm rpms at Rocky8
 
 
+### prepare build environment
+
+#### build common apptainer image
+```
+apptainer build ./base-rpmbuild-rocky86.sif ./base-rpmbuild-rocky86.def
+```
+
+
 ### build pmix
 
 #### build apptainer build image for pmix
 
 ```
+apptainer build ./build-pmix-rocky86.sif ./build-pmix-rocky86.def
 ```
 
 #### unpack pmix tarball
