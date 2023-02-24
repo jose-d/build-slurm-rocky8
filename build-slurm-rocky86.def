@@ -1,0 +1,17 @@
+Bootstrap: localimage
+From: base-rpmbuild-rocky86.sif
+
+%files
+    # system repo
+    /etc/yum.repos.d/phoebe_supplementary.repo /etc/yum.repos.d
+    
+    # to get libssh-devel we need epel
+    /etc/yum.repos.d/epel8_phoebe.repo /etc/yum.repos.d
+
+%post
+    dnf upgrade -y
+    dnf install -y zlib-devel munge-devel pam-devel perl-ExtUtils-MakeMaker python3 readline-devel mariadb-devel numactl-devel libevent-devel hwloc-devel lua-devel json-c-devel pam-devel libX11-devel libssh2-devel libyaml-devel libcurl-devel lz4-devel freeipmi-devel pmix pmix-devel http-parser-devel
+
+    dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo
+    dnf clean all
+    dnf -y install cuda-nvml-devel-12-0 cuda-12-0
