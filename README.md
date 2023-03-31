@@ -9,6 +9,10 @@ credits:
 
 #### (0) download source tarballs
 
+(clone this repo)
+
+`mkdir tarballs`
+
 ensure in  `tarballs` have:
 
 * `slurm-22.05.8.tar.bz2` - eg. from https://www.schedmd.com/downloads.php
