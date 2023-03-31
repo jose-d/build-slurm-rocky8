@@ -60,7 +60,21 @@ apptainer build ./build-slurm-rocky86.sif ./build-slurm-rocky86.def
 
 #### modify release number
 
-in `tarballs/slurm-22.05.8/slurm.spec`
+in `tarballs/slurm-22.05.8/slurm.spec`, so eg.: `vim tarballs/slurm-22.05.8/slurm.spec` and around line `3`:
+
+```
+  2 Version:        22.05.8
+  3 %define rel     202303311312
+  4 Release:        %{rel}%{?dist}
+```
+
+and also replace the following if block with 
+
+```
+%global slurm_source_dir %{name}-%{version}
+```
+
+as we build from the upstream tarball..
 
 #### build slurm rpms in apptainer
 
