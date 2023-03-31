@@ -1,5 +1,6 @@
 Bootstrap: yum
 OSVersion: 8.7
+#MirrorURL: https://dl.rockylinux.org/vault/rocky/%{OSVERSION}/BaseOS/x86_64/os/
 MirrorURL: https://dl.rockylinux.org/pub/rocky/%{OSVERSION}/BaseOS/$basearch/os/
 Include: yum
 
