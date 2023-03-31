@@ -44,11 +44,8 @@ and around line 196 we can insert YYYYMMDDHHmm:
 apptainer exec ./build-pmix-rocky86.sif rpmbuild --define 'build_all_in_one_rpm 0' --define 'configure_options --disable-per-user-config-files' -ba ./tarballs/pmix-3.2.4/contrib/pmix.spec
 ```
 
-should produce rpms in `$HOME/rpmbuild/RPMS/x86_64/`.
+should produce rpms in `$HOME/rpmbuild/RPMS/x86_64/`. The next container will pick them there automatically.
 
-#### upload rpms into repo
-
-(fixme)
 
 ### build slurm
 
@@ -83,3 +80,4 @@ as we build from the upstream tarball..
 ```
 apptainer exec ./build-slurm-rocky86.sif rpmbuild --define '_with_nvml --with-nvml=/usr/local/cuda/targets/x86_64-linux/' --with pam --with slurmrestd --with hwloc --with lua --with mysql --with numa --with pmix -ba ./tarballs/slurm-22.05.8/slurm.spec &> slurm_build.log```
 
+results should go into `$HOME/rpmbuild/RPMS/x86_64/`
