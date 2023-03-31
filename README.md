@@ -2,7 +2,10 @@
 Build slurm rpms at Rocky8 with cuda support.
 
 credits:
-strongly inspired by https://github.com/c3se/containers/tree/master/rpm-builds
+
+* https://github.com/c3se/containers/tree/master/rpm-builds (the whole concept)
+* advices of community at Easybuild Slack #scheduler channel
+* know-how from https://easybuild.io/tech-talks/ were used to clarify what is what.
 
 #### (0) download source tarballs
 
@@ -37,6 +40,8 @@ sudo apptainer build ./base-rpmbuild-rocky86.sif ./base-rpmbuild-rocky86.def
 #### (2) build apptainer build image for pmix
 
 ( no need of `sudo`, fakeroot works well, expect ~ 315 MB image)
+
+_Note, that this container is without munge - which is apparently breaking interworking with slurm. (I'm not fully sure why)_
 
 ```
 apptainer build --fakeroot ./build-pmix-rocky86.sif ./build-pmix-rocky86.def
