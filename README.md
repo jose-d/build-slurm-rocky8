@@ -25,23 +25,30 @@ apptainer build ./build-pmix-rocky86.sif ./build-pmix-rocky86.def
 
 ..to have unpacked pmix here: `tarballs/pmix-3.2.4/`
 
-#### modify release number 
+#### modify release number
 
 ..in `tarballs/pmix-3.2.4/contrib/pmix.spec`.
 
-release can be eg. YYYYmmDDHHMM etc. Default is `-1`.
+so eg. `vim tarballs/pmix-3.2.4/contrib/pmix.spec`..
 
+and around line 196 we can insert YYYYMMDDHHmm:
+
+```
+195 Version: 3.2.4
+196 Release: 202303311242%{?dist}
+197 License: BSD
+```
 #### build in apptainer
 
 ```
 apptainer exec ./build-pmix-rocky86.sif rpmbuild --define 'build_all_in_one_rpm 0' --define 'configure_options --disable-per-user-config-files' -ba ./tarballs/pmix-3.2.4/contrib/pmix.spec
 ```
 
+should produce rpms in `$HOME/rpmbuild/RPMS/x86_64/`.
+
 #### upload rpms into repo
 
-```
-...
-```
+(fixme)
 
 ### build slurm
 
