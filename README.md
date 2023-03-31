@@ -126,4 +126,4 @@ slurm-torque-22.05.8-202303311409.el8.x86_64.rpm
 $
 ```
 
-note, that slurm needs `libpmix.so`, which is curiously provided by `pmix-devel` rpm and not `pmix` as one could expect. So make sure that both rpms are installed at slurm server, submit, and execute nodes.
+Note, that slurm needs `libpmix.so`, which is curiously provided by `pmix-devel` rpm and not `pmix` as one would expect. So make sure that both rpms are installed at slurm server, submit, and execute nodes.
