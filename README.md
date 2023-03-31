@@ -4,6 +4,27 @@ Build slurm rpms at Rocky8 with cuda support.
 credits:
 strongly inspired by https://github.com/c3se/containers/tree/master/rpm-builds
 
+#### (0) download source tarballs
+
+ensure in  `tarballs` have:
+
+* `slurm-22.05.8.tar.bz2`
+* `slurm-22.05.8.tar.bz2`
+
+unpack all archives:
+
+```
+tar -xvf ./pmix-3.2.4.tar.bz2
+tar -xvf ./slurm-22.05.8.tar.bz2
+```
+
+..and copy them to rpmbuild directory:
+
+```
+cp tarballs/pmix-3.2.4.tar.bz2 $HOME/rpmbuild/SOURCES/
+cp tarballs/slurm-22.05.8.tar.bz2 $HOME/rpmbuild/SOURCES/
+```
+
 
 #### (1) build common apptainer image
 
@@ -21,16 +42,7 @@ sudo apptainer build ./base-rpmbuild-rocky86.sif ./base-rpmbuild-rocky86.def
 apptainer build --fakeroot ./build-pmix-rocky86.sif ./build-pmix-rocky86.def
 ```
 
-#### (3) unpack pmix tarball
-
-..to have unpacked pmix here: `tarballs/pmix-3.2.4/`
-..and copy original tarball into well-known directory:
-
-```
-cp tarballs/pmix-3.2.4.tar.bz2 $HOME/rpmbuild/SOURCES/
-```
-
-#### (4) modify pmix release number in spec file
+#### (3) modify pmix release number in spec file
 
 ..in `tarballs/pmix-3.2.4/contrib/pmix.spec`.
 
@@ -44,7 +56,7 @@ and around line 196 we can insert YYYYMMDDHHmm:
 197 License: BSD
 ```
 
-#### (5) build pmix in apptainer
+#### (4) build pmix in apptainer
 
 ```
 apptainer exec ./build-pmix-rocky86.sif rpmbuild --define 'build_all_in_one_rpm 0' --define 'configure_options --disable-per-user-config-files' -ba ./tarballs/pmix-3.2.4/contrib/pmix.spec
@@ -53,7 +65,7 @@ apptainer exec ./build-pmix-rocky86.sif rpmbuild --define 'build_all_in_one_rpm 
 should produce rpms in `$HOME/rpmbuild/RPMS/x86_64/`. The next container build will pick them there automatically.
 
 
-#### (6) build apptainer build image for slurm
+#### (5) build apptainer build image for slurm
 
 (expect ~4.4 GB image size)
 
@@ -61,16 +73,7 @@ should produce rpms in `$HOME/rpmbuild/RPMS/x86_64/`. The next container build w
 apptainer build --fakeroot ./build-slurm-rocky86.sif ./build-slurm-rocky86.def
 ```
 
-#### (7) unpack slurm tarball
-
-..to have unpacked slurm here: `tarballs/slurm-22.05.8/`
-..and copy original tarball into well-known directory:
-
-```
-cp tarballs/slurm-22.05.8.tar.bz2 $HOME/rpmbuild/SOURCES/
-```
-
-#### (8) modify release number
+#### (6) modify release number
 
 in `tarballs/slurm-22.05.8/slurm.spec`, so eg.: `vim tarballs/slurm-22.05.8/slurm.spec` and around line `3`:
 
@@ -88,9 +91,8 @@ and also replace the following `if` block with
 
 as we build from the upstream tarball..
 
-..and copy tarball into well-known directory: `cp tarballs/slurm-22.05.8.tar.bz2 $HOME/rpmbuild/SOURCES/slurm-22.05.8.tar.bz2`
 
-#### (9) build slurm rpms in apptainer
+#### (7) build slurm rpms in apptainer
 
 ```
 apptainer exec ./build-slurm-rocky86.sif rpmbuild --define '_with_nvml --with-nvml=/usr/local/cuda/targets/x86_64-linux/' --with pam --with slurmrestd --with hwloc --with lua --with mysql --with numa --with pmix -ba ./tarballs/slurm-22.05.8/slurm.spec &> slurm_build.log
