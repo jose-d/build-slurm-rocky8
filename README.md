@@ -27,6 +27,11 @@ apptainer build --fakeroot ./build-pmix-rocky86.sif ./build-pmix-rocky86.def
 #### unpack pmix tarball
 
 ..to have unpacked pmix here: `tarballs/pmix-3.2.4/`
+..and copy original tarball into well-known directory:
+
+```
+cp tarballs/pmix-3.2.4.tar.bz2 $HOME/rpmbuild/SOURCES/
+```
 
 #### modify release number
 
@@ -41,6 +46,7 @@ and around line 196 we can insert YYYYMMDDHHmm:
 196 Release: 202303311242%{?dist}
 197 License: BSD
 ```
+
 #### build in apptainer
 
 ```
