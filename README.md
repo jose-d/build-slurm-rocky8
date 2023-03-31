@@ -56,7 +56,7 @@ apptainer exec ./build-pmix-rocky86.sif rpmbuild --define 'build_all_in_one_rpm 
 should produce rpms in `$HOME/rpmbuild/RPMS/x86_64/`. The next container build will pick them there automatically.
 
 
-### build slurm
+### Build slurm RPMs
 
 #### build apptainer image for slurm containing pmix rpms from step above..
 
