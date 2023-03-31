@@ -99,3 +99,31 @@ apptainer exec ./build-slurm-rocky86.sif rpmbuild --define '_with_nvml --with-nv
 ```
 
 results should go into `$HOME/rpmbuild/RPMS/x86_64/`
+
+#### (8) final notes
+
+build results should look like 
+
+```
+$ ls -1 $HOME/rpmbuild/RPMS/x86_64/
+pmix-3.2.4-202303311352.el8.x86_64.rpm
+pmix-devel-3.2.4-202303311352.el8.x86_64.rpm
+pmix-libpmi-3.2.4-202303311352.el8.x86_64.rpm
+pmix-libpmi-devel-3.2.4-202303311352.el8.x86_64.rpm
+slurm-22.05.8-202303311409.el8.x86_64.rpm
+slurm-contribs-22.05.8-202303311409.el8.x86_64.rpm
+slurm-devel-22.05.8-202303311409.el8.x86_64.rpm
+slurm-example-configs-22.05.8-202303311409.el8.x86_64.rpm
+slurm-libpmi-22.05.8-202303311409.el8.x86_64.rpm
+slurm-openlava-22.05.8-202303311409.el8.x86_64.rpm
+slurm-pam_slurm-22.05.8-202303311409.el8.x86_64.rpm
+slurm-perlapi-22.05.8-202303311409.el8.x86_64.rpm
+slurm-slurmctld-22.05.8-202303311409.el8.x86_64.rpm
+slurm-slurmd-22.05.8-202303311409.el8.x86_64.rpm
+slurm-slurmdbd-22.05.8-202303311409.el8.x86_64.rpm
+slurm-slurmrestd-22.05.8-202303311409.el8.x86_64.rpm
+slurm-torque-22.05.8-202303311409.el8.x86_64.rpm
+$
+```
+
+note, that slurm needs `libpmix.so`, which is curiously provided by `pmix-devel` rpm and not `pmix` as one could expect. So make sure that both rpms are installed at slurm server, submit, and execute nodes.
