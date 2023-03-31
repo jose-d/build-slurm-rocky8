@@ -14,15 +14,15 @@ strongly inspired by https://github.com/c3se/containers/tree/master/rpm-builds
 ```
 sudo apptainer build ./base-rpmbuild-rocky86.sif ./base-rpmbuild-rocky86.def
 ```
-
-
-### build pmix
-
 #### build apptainer build image for pmix
 
+( no need of sudo, fakeroot works well )
+
 ```
-apptainer build ./build-pmix-rocky86.sif ./build-pmix-rocky86.def
+apptainer build --fakeroot ./build-pmix-rocky86.sif ./build-pmix-rocky86.def
 ```
+
+### Build of pmix RPMs
 
 #### unpack pmix tarball
 
