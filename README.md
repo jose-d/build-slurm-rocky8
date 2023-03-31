@@ -9,14 +9,14 @@ strongly inspired by https://github.com/c3se/containers/tree/master/rpm-builds
 
 #### build common apptainer image
 
-(`sudo` needed here)
+(`sudo` needed here, expect size of ~ 300 MB)
 
 ```
 sudo apptainer build ./base-rpmbuild-rocky86.sif ./base-rpmbuild-rocky86.def
 ```
 #### build apptainer build image for pmix
 
-( no need of `sudo`, fakeroot works well )
+( no need of `sudo`, fakeroot works well, expect ~ 315 MB image)
 
 ```
 apptainer build --fakeroot ./build-pmix-rocky86.sif ./build-pmix-rocky86.def
@@ -59,6 +59,7 @@ should produce rpms in `$HOME/rpmbuild/RPMS/x86_64/`. The next container build w
 ### Build slurm RPMs
 
 #### build apptainer image for slurm containing pmix rpms from step above..
+(expect ~4.4 GB image size)
 
 ```
 apptainer build --fakeroot ./build-slurm-rocky86.sif ./build-slurm-rocky86.def
