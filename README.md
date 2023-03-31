@@ -53,7 +53,7 @@ and around line 196 we can insert YYYYMMDDHHmm:
 apptainer exec ./build-pmix-rocky86.sif rpmbuild --define 'build_all_in_one_rpm 0' --define 'configure_options --disable-per-user-config-files' -ba ./tarballs/pmix-3.2.4/contrib/pmix.spec
 ```
 
-should produce rpms in `$HOME/rpmbuild/RPMS/x86_64/`. The next container will pick them there automatically.
+should produce rpms in `$HOME/rpmbuild/RPMS/x86_64/`. The next container build will pick them there automatically.
 
 
 ### build slurm
@@ -61,7 +61,7 @@ should produce rpms in `$HOME/rpmbuild/RPMS/x86_64/`. The next container will pi
 #### build apptainer image for slurm containing pmix rpms from step above..
 
 ```
-apptainer build ./build-slurm-rocky86.sif ./build-slurm-rocky86.def
+apptainer build --fakeroot ./build-slurm-rocky86.sif ./build-slurm-rocky86.def```
 ```
 
 #### modify release number
