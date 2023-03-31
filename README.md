@@ -1,5 +1,5 @@
 # build-slurm-rocky8
-Build slurm rpms at Rocky8
+Build slurm rpms at Rocky8 with cuda support.
 
 credits:
 strongly inspired by https://github.com/c3se/containers/tree/master/rpm-builds
