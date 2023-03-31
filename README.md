@@ -16,7 +16,7 @@ sudo apptainer build ./base-rpmbuild-rocky86.sif ./base-rpmbuild-rocky86.def
 ```
 #### build apptainer build image for pmix
 
-( no need of sudo, fakeroot works well )
+( no need of `sudo`, fakeroot works well )
 
 ```
 apptainer build --fakeroot ./build-pmix-rocky86.sif ./build-pmix-rocky86.def
