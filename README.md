@@ -8,8 +8,8 @@ strongly inspired by https://github.com/c3se/containers/tree/master/rpm-builds
 
 ensure in  `tarballs` have:
 
-* `slurm-22.05.8.tar.bz2`
-* `slurm-22.05.8.tar.bz2`
+* `slurm-22.05.8.tar.bz2` - eg. from https://www.schedmd.com/downloads.php
+* `pmix-3.2.4.tar.bz2` - eg. from https://github.com/openpmix/openpmix/releases
 
 unpack all archives:
 
