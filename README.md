@@ -61,7 +61,7 @@ should produce rpms in `$HOME/rpmbuild/RPMS/x86_64/`. The next container build w
 #### build apptainer image for slurm containing pmix rpms from step above..
 
 ```
-apptainer build --fakeroot ./build-slurm-rocky86.sif ./build-slurm-rocky86.def```
+apptainer build --fakeroot ./build-slurm-rocky86.sif ./build-slurm-rocky86.def
 ```
 
 #### modify release number
