@@ -58,11 +58,20 @@ should produce rpms in `$HOME/rpmbuild/RPMS/x86_64/`. The next container build w
 
 ### Build slurm RPMs
 
-#### build apptainer image for slurm containing pmix rpms from step above..
+#### build apptainer build image for slurm
 (expect ~4.4 GB image size)
 
 ```
 apptainer build --fakeroot ./build-slurm-rocky86.sif ./build-slurm-rocky86.def
+```
+
+#### unpack slurm tarball
+
+..to have unpacked slurm here: `tarballs/slurm-22.05.8/`
+..and copy original tarball into well-known directory:
+
+```
+cp tarballs/slurm-22.05.8.tar.bz2 $HOME/rpmbuild/SOURCES/
 ```
 
 #### modify release number
@@ -88,6 +97,7 @@ as we build from the upstream tarball..
 #### build slurm rpms in apptainer
 
 ```
-apptainer exec ./build-slurm-rocky86.sif rpmbuild --define '_with_nvml --with-nvml=/usr/local/cuda/targets/x86_64-linux/' --with pam --with slurmrestd --with hwloc --with lua --with mysql --with numa --with pmix -ba ./tarballs/slurm-22.05.8/slurm.spec &> slurm_build.log```
+apptainer exec ./build-slurm-rocky86.sif rpmbuild --define '_with_nvml --with-nvml=/usr/local/cuda/targets/x86_64-linux/' --with pam --with slurmrestd --with hwloc --with lua --with mysql --with numa --with pmix -ba ./tarballs/slurm-22.05.8/slurm.spec &> slurm_build.log
+```
 
 results should go into `$HOME/rpmbuild/RPMS/x86_64/`
