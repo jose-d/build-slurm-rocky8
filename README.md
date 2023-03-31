@@ -5,7 +5,7 @@ credits:
 
 * https://github.com/c3se/containers/tree/master/rpm-builds (the whole concept)
 * advices of community at Easybuild Slack #scheduler channel
-* know-how from https://easybuild.io/tech-talks/ were used to clarify what is what.
+* presentations https://easybuild.io/tech-talks/ were used to clarify what is what in mpi-pmi(x)-slurm construct
 
 #### (0) download source tarballs
 
