@@ -8,8 +8,11 @@ strongly inspired by https://github.com/c3se/containers/tree/master/rpm-builds
 ### prepare build environment
 
 #### build common apptainer image
+
+(`sudo` needed here)
+
 ```
-apptainer build ./base-rpmbuild-rocky86.sif ./base-rpmbuild-rocky86.def
+sudo apptainer build ./base-rpmbuild-rocky86.sif ./base-rpmbuild-rocky86.def
 ```
 
 
