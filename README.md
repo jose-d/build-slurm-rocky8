@@ -68,13 +68,15 @@ in `tarballs/slurm-22.05.8/slurm.spec`, so eg.: `vim tarballs/slurm-22.05.8/slur
   4 Release:        %{rel}%{?dist}
 ```
 
-and also replace the following if block with 
+and also replace the following `if` block with 
 
 ```
 %global slurm_source_dir %{name}-%{version}
 ```
 
 as we build from the upstream tarball..
+
+..and copy tarball into well-known directory: `cp tarballs/slurm-22.05.8.tar.bz2 $HOME/rpmbuild/SOURCES/slurm-22.05.8.tar.bz2`
 
 #### build slurm rpms in apptainer
 
