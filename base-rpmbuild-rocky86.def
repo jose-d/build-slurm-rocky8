@@ -1,5 +1,5 @@
 Bootstrap: yum
-OSVersion: 8.7
+OSVersion: 8.8
 #MirrorURL: https://dl.rockylinux.org/vault/rocky/%{OSVERSION}/BaseOS/x86_64/os/
 MirrorURL: https://dl.rockylinux.org/pub/rocky/%{OSVERSION}/BaseOS/$basearch/os/
 Include: yum
@@ -12,3 +12,5 @@ Include: yum
     dnf config-manager --set-enabled powertools
     dnf install -y rpm-build automake autoconf libtool make pkg-config less vim flex bison doxygen cmake bash-doc which
     dnf upgrade -y
+    #dnf install -y epel-release
+    #dnf install -y sphinx
