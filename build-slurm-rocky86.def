@@ -22,5 +22,6 @@ From: base-rpmbuild-rocky86.sif
     dnf -y install pmix pmix-devel
     dnf -y install cuda-nvml-devel-12-0 cuda-12-0
 
+    dnf install -y gtk2-devel
 
     dnf upgrade -y

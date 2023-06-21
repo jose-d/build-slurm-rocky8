@@ -27,9 +27,11 @@ tar -xvf ./slurm-22.05.8.tar.bz2
 
 ..and copy them to rpmbuild directory:
 
+`mkdir -p $HOME/rpmbuild/SOURCES/`
+
 ```
 cp tarballs/pmix-3.2.4.tar.bz2 $HOME/rpmbuild/SOURCES/
-cp tarballs/slurm-22.05.8.tar.bz2 $HOME/rpmbuild/SOURCES/
+cp tarballs/slurm-*.bz2 $HOME/rpmbuild/SOURCES/
 ```
 
 
