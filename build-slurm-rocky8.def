@@ -1,5 +1,5 @@
 Bootstrap: localimage
-From: base-rpmbuild-rocky86.sif
+From: base-rpmbuild-rocky8.sif
 
 %files
     ${HOME}/rpmbuild/RPMS/x86_64/* /localrepo/
@@ -20,7 +20,7 @@ From: base-rpmbuild-rocky86.sif
     dnf clean all
 
     dnf -y install pmix pmix-devel
-    dnf -y install cuda-nvml-devel-12-0 cuda-12-0
+    #dnf -y install cuda-nvml-devel-12-0 cuda-12-0
 
     dnf install -y gtk2-devel
 

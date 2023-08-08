@@ -40,7 +40,7 @@ cp tarballs/slurm-*.bz2 $HOME/rpmbuild/SOURCES/
 (`sudo` needed here, expect size of ~ 300 MB)
 
 ```
-sudo apptainer build ./base-rpmbuild-rocky86.sif ./base-rpmbuild-rocky86.def
+sudo apptainer build ./base-rpmbuild-rocky8.sif ./base-rpmbuild-rocky8.def
 ```
 
 #### (2) build apptainer build image for pmix
@@ -50,7 +50,7 @@ sudo apptainer build ./base-rpmbuild-rocky86.sif ./base-rpmbuild-rocky86.def
 _Note, that this container is without munge - which is apparently breaking interworking with slurm. (I'm not fully sure why)_
 
 ```
-apptainer build --fakeroot ./build-pmix-rocky86.sif ./build-pmix-rocky86.def
+apptainer build --fakeroot ./build-pmix-rocky8.sif ./build-pmix-rocky8.def
 ```
 
 #### (3) modify pmix release number in spec file
@@ -70,7 +70,7 @@ and around line 196 we can insert YYYYMMDDHHmm:
 #### (4) build pmix in apptainer
 
 ```
-apptainer exec ./build-pmix-rocky86.sif rpmbuild --define 'build_all_in_one_rpm 0' --define 'configure_options --disable-per-user-config-files' -ba ./tarballs/pmix-3.2.4/contrib/pmix.spec
+apptainer exec ./build-pmix-rocky8.sif rpmbuild --define 'build_all_in_one_rpm 0' --define 'configure_options --disable-per-user-config-files' -ba ./tarballs/pmix-3.2.4/contrib/pmix.spec
 ```
 
 should produce rpms in `$HOME/rpmbuild/RPMS/x86_64/`. The next container build will pick them there automatically.
@@ -81,7 +81,7 @@ should produce rpms in `$HOME/rpmbuild/RPMS/x86_64/`. The next container build w
 (expect ~4.4 GB image size)
 
 ```
-apptainer build --fakeroot ./build-slurm-rocky86.sif ./build-slurm-rocky86.def
+apptainer build --fakeroot ./build-slurm-rocky8.sif ./build-slurm-rocky8.def
 ```
 
 #### (6) modify release number
@@ -106,7 +106,7 @@ as we build from the upstream tarball..
 #### (7) build slurm rpms in apptainer
 
 ```
-apptainer exec ./build-slurm-rocky86.sif rpmbuild --define '_with_nvml --with-nvml=/usr/local/cuda/targets/x86_64-linux/' --with pam --with slurmrestd --with hwloc --with lua --with mysql --with numa --with pmix -ba ./tarballs/slurm-22.05.8/slurm.spec &> slurm_build.log
+apptainer exec ./build-slurm-rocky8.sif rpmbuild --define '_with_nvml --with-nvml=/usr/local/cuda/targets/x86_64-linux/' --with pam --with slurmrestd --with hwloc --with lua --with mysql --with numa --with pmix -ba ./tarballs/slurm-22.05.8/slurm.spec &> slurm_build.log
 ```
 
 results should go into `$HOME/rpmbuild/RPMS/x86_64/`
