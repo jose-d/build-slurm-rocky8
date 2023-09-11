@@ -20,7 +20,8 @@ From: base-rpmbuild-rocky8.sif
     dnf clean all
 
     dnf -y install pmix pmix-devel
-    #dnf -y install cuda-nvml-devel-12-0 cuda-12-0
+    # CUDA-related:
+    dnf -y install cuda-nvml-devel-12-2 cuda-12-2
 
     dnf install -y gtk2-devel
 
