@@ -68,8 +68,9 @@ jobs:
         with:
           name: pmix_rpms
           
-      - name: Display structure of downloaded files
-        run: ls -R
+      - name: Install downloaded rpms from previous job
+        run: |
+          dnf install -y ./pmix*.rpm
 
       - name: Download slurm tarballm, unpack, patch spec file
         run: |
@@ -78,7 +79,14 @@ jobs:
            wget --quiet https://download.schedmd.com/slurm/slurm-${SLURM_VERSION}.tar.bz2
            tar -xf ./slurm*
            cp slurm-*.tar.bz2 $HOME/rpmbuild/SOURCES/
-           sed -i "s/^%define rel.*$/%define rel     ${SLURM_RELEASE}/g" pmix-*/contrib/pmix.spec
+           sed -i "s/^%define rel.*$/%define rel     ${SLURM_RELEASE}/g" slurm*/pmix.spec
+           sed -i "s/^%global slurm_source_dir.*$/%global slurm_source_dir %{name}-%{version}/g" ./slurm*/slurm.spec
+
+      - name: Install NVML libraries
+        run: |
+           echo "true"
+          
+          
            
 
 
