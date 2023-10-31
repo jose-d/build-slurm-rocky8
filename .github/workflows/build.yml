@@ -14,11 +14,16 @@ jobs:
         run: |
           dnf install -y dnf-plugins-core
           dnf config-manager --set-enabled powertools
-          dnf install -y rpm-build automake autoconf libtool make pkg-config less vim flex bison doxygen cmake bash-doc which
+          dnf install -y rpm-build automake autoconf libtool make pkg-config less vim flex bison doxygen cmake bash-doc which wget
           dnf upgrade -y
       - name: Install pmix-specific pkgs
         run: |
           dnf install -y zlib-devel hwloc-devel libevent-devel python3-devel jansson-devel
           python3 -m pip install sphinx
+      - name: Download pmix and unpack it
+        run: |
+          wget https://github.com/openpmix/openpmix/releases/download/v4.2.7/pmix-4.2.7.tar.bz2
+          pwd
+          whoami
           
       
