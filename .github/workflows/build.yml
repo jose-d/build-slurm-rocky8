@@ -91,7 +91,7 @@ jobs:
           
       - name: Build pmix rpms
         run: |
-          apptainer exec --bind /home --bind ${GITHUB_WORKSPACE} rpmbuild --define 'build_all_in_one_rpm 0' --define 'configure_options --disable-per-user-config-files' -ba ./pmix-*/contrib/pmix.spec
+          apptainer exec --bind /home --bind ${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}/builddir/build-pmix-rocky8.sif rpmbuild --define 'build_all_in_one_rpm 0' --define 'configure_options --disable-per-user-config-files' -ba ./pmix-*/contrib/pmix.spec
           mkdir ${GITHUB_WORKSPACE}/rpms
           cp ${HOME}/rpmbuild/RPMS/x86_64/pmix-*.rpm ${GITHUB_WORKSPACE}/rpms/
       - name: Archive production artifacts
