@@ -2,6 +2,13 @@
 name: release
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on: [push]
+env:
+  DOCKER_REPO_BASE: josed/build_slurm_base
+  DOCKER_REPO_PMIX: josed/build_slurm_pmix
+  DOCKER_REPO_SLURM: josed/build_slurm_slurm
+  PMIX_VERSION: 4.2.7
+  SLURM_VERSION: 23.02.6
+  
 jobs:
   job000_docker_base:
     name: Build base docker image
@@ -18,7 +25,7 @@ jobs:
         with:
           context: "{{defaultContext}}:.github/dockerfiles/base"
           push: true
-          tags: josed/build_slurm_base:latest
+          tags: ${{ env.DOCKER_REPO_BASE }}
           
   job000_docker_pmix:
     name: Build pmix build docker image
@@ -36,7 +43,7 @@ jobs:
         with:
           context: "{{defaultContext}}:.github/dockerfiles/pmix"
           push: true
-          tags: josed/build_slurm_pmix
+          tags: ${{ env.DOCKER_REPO_PMIX }}
 
   job000_docker_slurm:
     name: Build slurm build docker image
@@ -54,14 +61,14 @@ jobs:
         with:
           context: "{{defaultContext}}:.github/dockerfiles/slurm"
           push: true
-          tags: josed/build_slurm_slurm
+          tags: ${{ env.DOCKER_REPO_SLURM }}
   
   job001:
     name: Build pmix
     runs-on: ubuntu-latest
     needs: job000_docker_pmix
     container:
-      image: josed/build_slurm_pmix:latest
+      image: ${{ env.DOCKER_REPO_PMIX }}:latest
       options: --privileged
     steps:
       - name: Prepare base build env
@@ -69,7 +76,6 @@ jobs:
           mkdir -p ${HOME}/rpmbuild/SOURCES/
       - name: Download pmix and unpack it
         run: |
-          export PMIX_VERSION="4.2.7"
           export PMIX_RELEASE="$(date +%Y%m%d%H%M%S)"
           wget --quiet https://github.com/openpmix/openpmix/releases/download/v${PMIX_VERSION}/pmix-${PMIX_VERSION}.tar.bz2
           tar -xf ./pmix*
@@ -93,7 +99,7 @@ jobs:
       - job001
     runs-on: ubuntu-latest
     container:
-      image: josed/build_slurm_slurm:latest
+      image: ${{ env.DOCKER_REPO_SLURM }}:latest
       options: --privileged
     steps:
       - name: Prepare base build env
@@ -111,7 +117,6 @@ jobs:
 
       - name: Download slurm tarballm, unpack, patch spec file
         run: |
-           export SLURM_VERSION="23.02.6"
            export SLURM_RELEASE="$(date +%Y%m%d%H%M%S)"
            wget --quiet https://download.schedmd.com/slurm/slurm-${SLURM_VERSION}.tar.bz2
            tar -xf ./slurm*
