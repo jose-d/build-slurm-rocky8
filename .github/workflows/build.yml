@@ -108,7 +108,7 @@ jobs:
       - job001
     runs-on: ubuntu-latest
     container:
-      image: ${{ env.DOCKER_REPO_SLURM }}:latest
+      image: ${{ needs.job000_docker_slurm.outputs.image }}:latest
       options: --privileged
     steps:
       - name: Prepare base build env
