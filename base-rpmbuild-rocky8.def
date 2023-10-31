@@ -1,8 +1,10 @@
-Bootstrap: yum
-OSVersion: 8.8
+#Bootstrap: yum
+#OSVersion: 8.8
 #MirrorURL: https://dl.rockylinux.org/vault/rocky/%{OSVERSION}/BaseOS/x86_64/os/
-MirrorURL: https://dl.rockylinux.org/pub/rocky/%{OSVERSION}/BaseOS/$basearch/os/
-Include: yum
+#MirrorURL: https://dl.rockylinux.org/pub/rocky/%{OSVERSION}/BaseOS/$basearch/os/
+#Include: yum
+Bootstrap: docker
+From: rockylinux:8
 
 %environment
     export LC_ALL=C
