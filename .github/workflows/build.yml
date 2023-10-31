@@ -32,8 +32,8 @@ jobs:
 
       - name: build base image in apptainer
         run: |
-          sudo echo '%_var /var' > $HOME/.rpmmacros
-          sudo echo '%_dbpath %{_var}/lib/rpm' >> $HOME/.rpmmacros
+          sudo echo '%_var /var' > /root/.rpmmacros
+          sudo echo '%_dbpath %{_var}/lib/rpm' >> /root/.rpmmacros
           sudo apptainer build ./base-rpmbuild-rocky8.sif ./base-rpmbuild-rocky8.def
   
   build_pmix_build_image:
