@@ -84,10 +84,25 @@ jobs:
 
       - name: Install NVML libraries
         run: |
-           export CUDA_VERSION="12.2"
+           export CUDA_VERSION="12-2"
            dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo
            dnf clean all
            dnf -y install cuda-nvml-devel-${CUDA_VERSION} cuda-${CUDA_VERSION}
+
+      - name: Try to build slurm
+        run: |
+           rpmbuild --define '_with_nvml \
+                    --with-nvml=/usr/local/cuda/targets/x86_64-linux/' \
+                    --with pam \
+                    --with slurmrestd \
+                    --with hwloc \
+                    --with lua \
+                    --with mysql \
+                    --with numa \
+                    --with pmix \
+                    -ba ./slurm-*/slurm.spec
+
+      
           
           
            
