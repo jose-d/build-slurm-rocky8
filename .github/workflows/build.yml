@@ -79,12 +79,15 @@ jobs:
            wget --quiet https://download.schedmd.com/slurm/slurm-${SLURM_VERSION}.tar.bz2
            tar -xf ./slurm*
            cp slurm-*.tar.bz2 $HOME/rpmbuild/SOURCES/
-           sed -i "s/^%define rel.*$/%define rel     ${SLURM_RELEASE}/g" slurm*/pmix.spec
+           sed -i "s/^%define rel.*$/%define rel     ${SLURM_RELEASE}/g" slurm*/slurm.spec
            sed -i "s/^%global slurm_source_dir.*$/%global slurm_source_dir %{name}-%{version}/g" ./slurm*/slurm.spec
 
       - name: Install NVML libraries
         run: |
-           echo "true"
+           export CUDA_VERSION="12.2"
+           dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo
+           dnf clean all
+           dnf -y install cuda-nvml-devel-${CUDA_VERSION} cuda-${CUDA_VERSION}
           
           
            
