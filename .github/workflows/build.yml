@@ -68,14 +68,14 @@ jobs:
 
       - uses: actions/checkout@v4
         with:
-          sparse-checkout: |
-            build-pmix-rocky8.def
+          sparse-checkout: build-pmix-rocky8.def
           sparse-checkout-cone-mode: false
+          path: 'src'
 
-      - name: build base image in apptainer
+      - name: build pmix build image in apptainer
         run: |
           mkdir -p ${GITHUB_WORKSPACE}/builddir
-          apptainer build ${GITHUB_WORKSPACE}/builddir/build-pmix-rocky8.sif build-pmix-rocky8.def
+          apptainer build ${GITHUB_WORKSPACE}/builddir/build-pmix-rocky8.sif src/build-pmix-rocky8.def
 
       - name: Prepare base build env
         run: |
