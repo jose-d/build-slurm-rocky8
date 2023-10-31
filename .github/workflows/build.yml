@@ -17,13 +17,14 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: "{{defaultContext}}:.github/dockerfiles/"
+          context: "{{defaultContext}}:.github/dockerfiles/base"
           push: true
           tags: user/app:latest
 
   job001:
     name: Build pmix
     runs-on: ubuntu-latest
+    needs: job000
     container:
       image: rockylinux/rockylinux:8
       options: --privileged
