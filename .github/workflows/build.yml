@@ -1,4 +1,7 @@
 ---
+
+# almost working docker version here: https://gist.github.com/jose-d/c69ea72ee8eea1d54fddb60da52c7bc1
+
 name: release
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on: [push]
