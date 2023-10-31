@@ -37,4 +37,4 @@ jobs:
         with:
           name: pmix rpms
           path: |
-            /github/home/rpmbuild/RPMS/*.rpm
+            ~/RPMS/*.rpm
