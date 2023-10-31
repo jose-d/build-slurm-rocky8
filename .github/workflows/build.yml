@@ -34,7 +34,15 @@ jobs:
         run: |
           sudo bash -c "echo '%_var /var' > /root/.rpmmacros"
           sudo bash -c "echo '%_dbpath %{_var}/lib/rpm' >> /root/.rpmmacros"
-          sudo apptainer build ./base-rpmbuild-rocky8.sif ./base-rpmbuild-rocky8.def
+          mkdir -p ${GITHUB_WORKSPACE}/builddir
+          sudo rpm --initdb 
+          sudo apptainer build ${GITHUB_WORKSPACE}/builddir/base-rpmbuild-rocky8.sif ./base-rpmbuild-rocky8.def
+
+      - name: Upload sif file as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: base-rpmbuild-rocky8.sif
+          path: ${GITHUB_WORKSPACE}/builddir/base-rpmbuild-rocky8.sif
   
   build_pmix_build_image:
     name: Build pmix apptainer image
