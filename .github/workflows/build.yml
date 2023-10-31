@@ -10,16 +10,14 @@ env:
   SLURM_VERSION: 23.02.6
   
 jobs:
-  job000_apptainer_base:
+  build_base_image:
     name: Build base apptainer image
     runs-on: ubuntu-latest
-    outputs:
-      image: ${{ env.DOCKER_REPO_BASE }}
     steps:
       - name: Install apptainer
         run: |
           sudo apt update
-          sudo apt install -y wget
+          sudo apt install -y wget dnf
           cd /tmp
           wget --quiet https://github.com/apptainer/apptainer/releases/download/v1.2.4/apptainer_1.2.4_amd64.deb
           sudo apt install -y ./apptainer_1.2.4_amd64.deb
@@ -33,6 +31,22 @@ jobs:
       - name: build base image in apptainer
         run: |
           sudo apptainer build ./base-rpmbuild-rocky8.sif ./base-rpmbuild-rocky8.def
+  
+  build_pmix_build_image:
+    name: Build pmix apptainer image
+    runs-on: ubuntu-latest
+    needs: build_base_image
+    outputs:
+      image: ${{ env.DOCKER_REPO_BASE }}
+    steps:
+      - name: Install apptainer
+        run: |
+          sudo apt update
+          sudo apt install -y wget
+          cd /tmp
+          wget --quiet https://github.com/apptainer/apptainer/releases/download/v1.2.4/apptainer_1.2.4_amd64.deb
+          sudo apt install -y ./apptainer_1.2.4_amd64.deb
+
 
     
     
