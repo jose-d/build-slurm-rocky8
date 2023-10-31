@@ -42,6 +42,7 @@ jobs:
             ${{ github.workspace }}/rpms/*.rpm
   job002:
     name: Build Slurm
+    needs: job001
     runs-on: ubuntu-latest
     container:
       image: rockylinux/rockylinux:8
@@ -69,6 +70,16 @@ jobs:
           
       - name: Display structure of downloaded files
         run: ls -R
+
+      - name: Download slurm tarballm, unpack, patch spec file
+        run: |
+           export SLURM_VERSION="23.02.6"
+           export SLURM_RELEASE="$(date +%Y%m%d%H%M%S)"
+           wget --quiet https://download.schedmd.com/slurm/slurm-${SLURM_VERSION}.tar.bz2
+           tar -xf ./slurm*
+           cp slurm-*.tar.bz2 $HOME/rpmbuild/SOURCES/
+           sed -i "s/^%define rel.*$/%define rel     ${SLURM_RELEASE}/g" pmix-*/contrib/pmix.spec
+           
 
 
 
