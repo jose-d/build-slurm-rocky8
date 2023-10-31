@@ -1,4 +1,4 @@
-ootstrap: localimage
+Bootstrap: localimage
 From: base-rpmbuild-rocky8.sif
 
 %post
