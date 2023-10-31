@@ -37,4 +37,5 @@ jobs:
         with:
           name: pmix rpms
           path: |
-            ~/RPMS/*.rpm
+            /github/home/rpmbuild/RPMS/x86_64/pmix-4.2.7-20231031150754.el8.x86_64.rpm
+            /github/home/rpmbuild/RPMS/x86_64/pmix-devel-4.2.7-20231031150754.el8.x86_64.rpm
