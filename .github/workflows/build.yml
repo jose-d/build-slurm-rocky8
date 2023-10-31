@@ -16,6 +16,7 @@ jobs:
           dnf config-manager --set-enabled powertools
           dnf install -y rpm-build automake autoconf libtool make pkg-config less vim flex bison doxygen cmake bash-doc which wget
           dnf upgrade -y
+          mkdir -p $HOME/rpmbuild/SOURCES/
       - name: Install pmix-specific pkgs
         run: |
           dnf install -y zlib-devel hwloc-devel libevent-devel python3-devel jansson-devel
