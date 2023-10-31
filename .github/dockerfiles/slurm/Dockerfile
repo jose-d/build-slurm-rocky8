@@ -1,6 +1,7 @@
 FROM josed/build_slurm_base:latest
 
-RUN export CUDA_VERSION="12-2"
+ENV CUDA_VERSION=12-2
+
 RUN dnf upgrade -y
 RUN dnf install -y epel-release
 RUN dnf install -y libjwt-devel zlib-devel munge-devel pam-devel perl-ExtUtils-MakeMaker python3 readline-devel mariadb-devel numactl-devel libevent-devel hwloc-devel lua-devel json-c-devel pam-devel libX11-devel libssh2-devel libyaml-devel libcurl-devel lz4-devel freeipmi-devel http-parser-devel dbus-devel
