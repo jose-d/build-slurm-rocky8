@@ -19,9 +19,11 @@ jobs:
           context: "{{defaultContext}}:.github/dockerfiles/base"
           push: true
           tags: josed/build_slurm_base:latest
+          
   job000_docker_pmix:
     name: Build pmix build docker image
     runs-on: ubuntu-latest
+    needs: job000_docker_base
     steps:
       - name: Login to github image/package registry
         uses: docker/login-action@v3
