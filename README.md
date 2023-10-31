@@ -1,5 +1,5 @@
 # build-slurm-rocky8
-Build slurm rpms at Rocky8 with cuda support.
+Build slurm rpms at Rocky8 with nvml support.
 
 credits:
 
