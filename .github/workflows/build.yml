@@ -6,6 +6,8 @@ env:
   DOCKER_REPO_BASE: josed/build_slurm_base
   DOCKER_REPO_PMIX: josed/build_slurm_pmix
   DOCKER_REPO_SLURM: josed/build_slurm_slurm
+  APPTAINER_URL: https://github.com/apptainer/apptainer/releases/download/v1.2.4/apptainer_1.2.4_amd64.deb
+  APPTAINER_DEB: apptainer_1.2.4_amd64.deb
   PMIX_VERSION: 4.2.7
   SLURM_VERSION: 23.02.6
   
@@ -19,8 +21,8 @@ jobs:
           sudo apt update
           sudo apt install -y wget dnf
           cd /tmp
-          wget --quiet https://github.com/apptainer/apptainer/releases/download/v1.2.4/apptainer_1.2.4_amd64.deb
-          sudo apt install -y ./apptainer_1.2.4_amd64.deb
+          wget --quiet ${APPTAINER_URL}
+          sudo apt install -y ./${APPTAINER_DEB}
 
       - uses: actions/checkout@v4
         with:
@@ -30,6 +32,8 @@ jobs:
 
       - name: build base image in apptainer
         run: |
+          sudo echo '%_var /var' > $HOME/.rpmmacros
+          sudo echo '%_dbpath %{_var}/lib/rpm' >> $HOME/.rpmmacros
           sudo apptainer build ./base-rpmbuild-rocky8.sif ./base-rpmbuild-rocky8.def
   
   build_pmix_build_image:
@@ -42,10 +46,10 @@ jobs:
       - name: Install apptainer
         run: |
           sudo apt update
-          sudo apt install -y wget
+          sudo apt install -y wget dnf
           cd /tmp
-          wget --quiet https://github.com/apptainer/apptainer/releases/download/v1.2.4/apptainer_1.2.4_amd64.deb
-          sudo apt install -y ./apptainer_1.2.4_amd64.deb
+          wget --quiet ${APPTAINER_URL}
+          sudo apt install -y ./${APPTAINER_DEB}
 
 
     
