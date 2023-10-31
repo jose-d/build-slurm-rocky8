@@ -119,6 +119,15 @@ jobs:
                     --with numa \
                     --with pmix \
                     -ba ./slurm-*/slurm.spec
+           mkdir ${GITHUB_WORKSPACE}/rpms
+           cp ${HOME}/rpmbuild/RPMS/x86_64/pmix-*.rpm ${GITHUB_WORKSPACE}/rpms/
+           
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: slurm_rpms
+          path: |
+            ${{ github.workspace }}/rpms/*.rpm
 
       
           
