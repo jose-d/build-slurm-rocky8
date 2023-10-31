@@ -31,7 +31,7 @@ jobs:
           sed -i "s/^Release.*$/Release: ${PMIX_RELEASE}%{?dist}/g" pmix-*/contrib/pmix.spec
       - name: Build pmix rpms
         run: |
-          rpmbuild --define 'build_all_in_one_rpm 0' --define 'configure_options --disable-per-user-config-files' -ba ./pmix-*/contrib/pmix.spe
+          rpmbuild --define 'build_all_in_one_rpm 0' --define 'configure_options --disable-per-user-config-files' -ba ./pmix-*/contrib/pmix.spec
       - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
