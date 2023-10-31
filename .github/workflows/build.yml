@@ -19,7 +19,7 @@ jobs:
         with:
           context: "{{defaultContext}}:.github/dockerfiles/base"
           push: true
-          tags: user/app:latest
+          tags: josed/build_slurm_base:latest
           secrets: |
             GIT_AUTH_TOKEN=${{ secrets.PACKAGES_SECRET }}
 
