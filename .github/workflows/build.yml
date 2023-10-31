@@ -10,18 +10,15 @@ jobs:
       - name: Login to github image/package registry
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.PACKAGES_SECRET }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: "{{defaultContext}}:.github/dockerfiles/base"
           push: true
-          tags: jose-d/build_slurm_base:latest
-          secrets: |
-            GIT_AUTH_TOKEN=${{ secrets.PACKAGES_SECRET }}
+          tags: josed/build_slurm_base:latest
 
   job001:
     name: Build pmix
