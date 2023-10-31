@@ -46,13 +46,45 @@ jobs:
         with:
           name: base-rpmbuild-rocky8.sif
           path: ${{ github.workspace }}/builddir/base-rpmbuild-rocky8.sif
+
+  build_slurm_build_stage1_image:
+    name: Build slurm stage1 build apptainer image
+    runs-on: ubuntu-latest
+    needs: build_base_image
+    steps:
+      - name: Install apptainer
+        run: |
+          sudo apt update
+          sudo apt install -y wget dnf
+          cd /tmp
+          wget --quiet ${APPTAINER_URL}
+          sudo apt install -y ./${APPTAINER_DEB}
+          
+      - uses: actions/download-artifact@v3
+        with:
+          name: base-rpmbuild-rocky8.sif
+
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: build-slurm-rocky8_stage1.def
+          sparse-checkout-cone-mode: false
+          path: 'src'
+
+      - name: build slurm build stage1 image in apptainer
+        run: |
+          mkdir -p ${GITHUB_WORKSPACE}/builddir
+          apptainer build ${GITHUB_WORKSPACE}/builddir/build-slurm-rocky8_stage1.sif src/build-slurm-rocky8_stage1.def
+
+      - name: Upload sif file as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-slurm-rocky8_stage1.sif
+          path: ${{ github.workspace }}/builddir/build-slurm-rocky8_stage1.sif
   
   build_pmix_build_image:
     name: Build pmix apptainer image
     runs-on: ubuntu-latest
     needs: build_base_image
-    outputs:
-      image: ${{ env.DOCKER_REPO_BASE }}
     steps:
       - name: Install apptainer
         run: |
