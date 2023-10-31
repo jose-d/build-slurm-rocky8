@@ -23,7 +23,8 @@ jobs:
           python3 -m pip install sphinx
       - name: Download pmix and unpack it
         run: |
-          wget https://github.com/openpmix/openpmix/releases/download/v4.2.7/pmix-4.2.7.tar.bz2
+          export PMIX_VERSION="4.2.7"
+          wget https://github.com/openpmix/openpmix/releases/download/v${PMIX_VERSION}/pmix-${PMIX_VERSION}.tar.bz2
           tar -xvf ./pmix*
           cp tarballs/pmix-*.tar.bz2 $HOME/rpmbuild/SOURCES/
           sed -i 's/^Release.*$/Release=Brekekeke/g' pmix-*/contrib/pmix.spec
