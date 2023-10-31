@@ -61,7 +61,20 @@ jobs:
           cd /tmp
           wget --quiet ${APPTAINER_URL}
           sudo apt install -y ./${APPTAINER_DEB}
+          
+      - uses: actions/download-artifact@v3
+        with:
+          name: base-rpmbuild-rocky8.sif
 
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            build-pmix-rocky8.def
+          sparse-checkout-cone-mode: false
 
+      - name: build base image in apptainer
+        run: |
+          mkdir -p ${GITHUB_WORKSPACE}/builddir
+          apptainer build ${GITHUB_WORKSPACE}/builddir/build-pmix-rocky8.sif .build-pmix-rocky8.def
     
     
