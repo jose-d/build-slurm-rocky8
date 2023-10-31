@@ -61,7 +61,7 @@ jobs:
           dnf upgrade -y
           dnf install -y epel-release
           dnf install -y libjwt-devel zlib-devel munge-devel pam-devel perl-ExtUtils-MakeMaker python3 readline-devel mariadb-devel numactl-devel libevent-devel hwloc-devel lua-devel json-c-devel pam-devel libX11-devel libssh2-devel libyaml-devel libcurl-devel lz4-devel freeipmi-devel http-parser-devel dbus-devel
-          dnf install -y createrepo_c
+          dnf install -y createrepo_c gtk2-devel
           
       - name: Download artifacts - pmix rpms from previous step
         uses: actions/download-artifact@v3
@@ -91,8 +91,7 @@ jobs:
 
       - name: Try to build slurm
         run: |
-           rpmbuild --define '_with_nvml \
-                    --with-nvml=/usr/local/cuda/targets/x86_64-linux/' \
+           rpmbuild --define '_with_nvml --with-nvml=/usr/local/cuda/targets/x86_64-linux/' \
                     --with pam \
                     --with slurmrestd \
                     --with hwloc \
