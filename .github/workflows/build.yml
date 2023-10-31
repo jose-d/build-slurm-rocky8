@@ -75,6 +75,30 @@ jobs:
       - name: build base image in apptainer
         run: |
           mkdir -p ${GITHUB_WORKSPACE}/builddir
-          apptainer build ${GITHUB_WORKSPACE}/builddir/build-pmix-rocky8.sif .build-pmix-rocky8.def
+          apptainer build ${GITHUB_WORKSPACE}/builddir/build-pmix-rocky8.sif build-pmix-rocky8.def
+
+      - name: Prepare base build env
+        run: |
+          mkdir -p ${HOME}/rpmbuild/SOURCES/
+          
+      - name: Download pmix and unpack it
+        run: |
+          export PMIX_RELEASE="$(date +%Y%m%d%H%M%S)"
+          wget --quiet https://github.com/openpmix/openpmix/releases/download/v${PMIX_VERSION}/pmix-${PMIX_VERSION}.tar.bz2
+          tar -xf ./pmix*
+          cp pmix-*.tar.bz2 $HOME/rpmbuild/SOURCES/
+          sed -i "s/^Release.*$/Release: ${PMIX_RELEASE}%{?dist}/g" pmix-*/contrib/pmix.spec
+          
+      - name: Build pmix rpms
+        run: |
+          apptainer exec --bind /home --bind ${GITHUB_WORKSPACE} rpmbuild --define 'build_all_in_one_rpm 0' --define 'configure_options --disable-per-user-config-files' -ba ./pmix-*/contrib/pmix.spec
+          mkdir ${GITHUB_WORKSPACE}/rpms
+          cp ${HOME}/rpmbuild/RPMS/x86_64/pmix-*.rpm ${GITHUB_WORKSPACE}/rpms/
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: pmix_rpms
+          path: |
+            ${{ github.workspace }}/rpms/*.rpm
     
     
