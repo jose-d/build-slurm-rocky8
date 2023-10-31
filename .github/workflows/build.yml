@@ -20,6 +20,8 @@ jobs:
           context: "{{defaultContext}}:.github/dockerfiles/base"
           push: true
           tags: user/app:latest
+          secrets: |
+            GIT_AUTH_TOKEN=${{ secrets.PACKAGES_SECRET }}
 
   job001:
     name: Build pmix
