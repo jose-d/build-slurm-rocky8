@@ -45,7 +45,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: base-rpmbuild-rocky8.sif
-          path: ${GITHUB_WORKSPACE}/builddir/base-rpmbuild-rocky8.sif
+          path: ${{ github.workspace }}/builddir/base-rpmbuild-rocky8.sif
   
   build_pmix_build_image:
     name: Build pmix apptainer image
