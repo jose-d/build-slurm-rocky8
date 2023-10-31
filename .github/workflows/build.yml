@@ -32,10 +32,11 @@ jobs:
       - name: Build pmix rpms
         run: |
           rpmbuild --define 'build_all_in_one_rpm 0' --define 'configure_options --disable-per-user-config-files' -ba ./pmix-*/contrib/pmix.spec
+          mkdir ${GITHUB_WORKSPACE}/rpms
+          cp github/home/rpmbuild/RPMS/x86_64/pmix-*.rpm ${GITHUB_WORKSPACE}/rpms/
       - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
           name: pmix rpms
           path: |
-            /github/home/rpmbuild/RPMS/x86_64/pmix-4.2.7-20231031150754.el8.x86_64.rpm
-            /github/home/rpmbuild/RPMS/x86_64/pmix-devel-4.2.7-20231031150754.el8.x86_64.rpm
+            ${{ github.workspace }}/rpms/*.rpm
