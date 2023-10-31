@@ -17,7 +17,6 @@ jobs:
           dnf install -y rpm-build automake autoconf libtool make pkg-config less vim flex bison doxygen cmake bash-doc which wget
           dnf upgrade -y
           mkdir -p ${HOME}/rpmbuild/SOURCES/
-          echo ${HOME}
       - name: Install pmix-specific pkgs
         run: |
           dnf install -y zlib-devel hwloc-devel libevent-devel python3-devel jansson-devel
@@ -26,8 +25,8 @@ jobs:
         run: |
           export PMIX_VERSION="4.2.7"
           export PMIX_RELEASE="$(date +%Y%m%d%H%M%S)"
-          wget https://github.com/openpmix/openpmix/releases/download/v${PMIX_VERSION}/pmix-${PMIX_VERSION}.tar.bz2
-          tar -xvf ./pmix*
+          wget --quiet https://github.com/openpmix/openpmix/releases/download/v${PMIX_VERSION}/pmix-${PMIX_VERSION}.tar.bz2
+          tar -xf ./pmix*
           cp pmix-*.tar.bz2 $HOME/rpmbuild/SOURCES/
           sed -i "s/^Release.*$/Release: ${PMIX_RELEASE}%{?dist}/g" pmix-*/contrib/pmix.spec
       - name: Build pmix rpms
@@ -38,6 +37,40 @@ jobs:
       - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: pmix rpms
+          name: pmix_rpms
           path: |
             ${{ github.workspace }}/rpms/*.rpm
+  job002:
+    name: Build Slurm
+    runs-on: ubuntu-latest
+    container:
+      image: rockylinux/rockylinux:8
+      options: --privileged
+    steps:
+      - name: Prepare base build env
+        run: |
+          dnf install -y dnf-plugins-core
+          dnf config-manager --set-enabled powertools
+          dnf install -y rpm-build automake autoconf libtool make pkg-config less vim flex bison doxygen cmake bash-doc which wget
+          dnf upgrade -y
+          mkdir -p ${HOME}/rpmbuild/SOURCES/
+          
+      - name: Install slurm-build-specific pkgs
+        run: |
+          dnf upgrade -y
+          dnf install -y epel-release
+          dnf install -y libjwt-devel zlib-devel munge-devel pam-devel perl-ExtUtils-MakeMaker python3 readline-devel mariadb-devel numactl-devel libevent-devel hwloc-devel lua-devel json-c-devel pam-devel libX11-devel libssh2-devel libyaml-devel libcurl-devel lz4-devel freeipmi-devel http-parser-devel dbus-devel
+          dnf install -y createrepo_c
+          
+      - name: Download artifacts - pmix rpms from previous step
+        uses: actions/download-artifact@v3
+        with:
+          name: pmix_rpms
+          
+      - name: Display structure of downloaded files
+        run: ls -R
+
+
+
+          
+    
