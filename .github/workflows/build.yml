@@ -81,7 +81,7 @@ jobs:
           source build_base_build-image_vars.txt
           
           SLURM_RELTAG="$(date +%Y%m%d%H%M%S)"
-          SLURMIMAGE_RELTAG="slurmimg_${PMIX_RELTAG}"
+          SLURMIMAGE_RELTAG="slurmimg_${SLURM_RELTAG}"
           SLURMIMAGE_URL="${IMG_REPO_URL}:${SLURMIMAGE_RELTAG}"
 
           # set job-wide env vars:
@@ -221,7 +221,6 @@ jobs:
                      -v ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} \
                      -v ${HOME}:${HOME} \
                      -w ${GITHUB_WORKSPACE} ${PMIXIMAGE_URL} /bin/bash scripts/.github/scripts/build_pmix.sh
-  
 
       - name: Upload pmix rpms as artifacts
         uses: actions/upload-artifact@v3
