@@ -95,7 +95,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           build-args: |
-            BASE_IMAGE=${BASEIMAGE_URL}
+            BASE_IMAGE=${{ env.BASEIMAGE_URL }}
           context: "{{defaultContext}}:.github/dockerfiles/pmix"
           push: false
           tags: ${{ env.IMG_REPO_URL }}:${{ env.PMIXIMAGE_RELTAG }}
