@@ -6,6 +6,7 @@ name: release
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on: workflow_dispatch
 env:
+  # github image repository url - used to cache docker images
   IMG_REPO_URL: ghcr.io/jose-d/build-slurm-rocky8
   # version of openpmix and slurm to download and build together
   PMIX_VERSION: 4.2.7
