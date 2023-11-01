@@ -24,7 +24,7 @@ jobs:
         with:
           context: "{{defaultContext}}:.github/dockerfiles/base"
           push: false
-          tags: jose-d/build-slurm-rocky8
+          tags: ghcr.io/jose-d/build-slurm-rocky8
 
       - name: Login to github registry and push image there
         run: |
