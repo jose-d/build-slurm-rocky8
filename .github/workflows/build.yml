@@ -290,6 +290,13 @@ jobs:
                      -v ${HOME}:${HOME} \
                      -w ${GITHUB_WORKSPACE} ${SLURMIMAGE_URL} /bin/bash scripts/.github/scripts/build_slurm.sh
 
+      - name: Upload slurm rpms as artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: slurm_rpms
+          path: |
+            ${{ github.workspace }}/rpms/*.rpm
+
 
 
 
