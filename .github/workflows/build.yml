@@ -85,8 +85,9 @@ jobs:
       - name: Save persistent data
         shell: bash
         run: |
-          echo "PMIX_RELTAG=${PMIX_RELTAG}" > build_pmix_build-image.txt
-          echo "PMIXIMAGE_RELTAG=${PMIXIMAGE_RELTAG}" > build_pmix_build-image.txt
+          touch build_pmix_build-image.txt
+          echo "PMIX_RELTAG=${PMIX_RELTAG}" >> build_pmix_build-image.txt
+          echo "PMIXIMAGE_RELTAG=${PMIXIMAGE_RELTAG}" >> build_pmix_build-image.txt
 
       - name: Upload persistent data form job as an artifact
         uses: actions/upload-artifact@v3
@@ -151,6 +152,7 @@ jobs:
         env:
           PMIX_RELEASE: ${{ needs.build_pmix_build-image.outputs.PMIX_RELTAG }}
         run: |
+          cat build_pmix_build-image.txt
           source build_pmix_build-image.txt
           echo "PMIX_RELTAG: ${PMIX_RELTAG}, PMIX_VERSION: ${PMIX_VERSION}"
           mkdir -p ${HOME}/rpmbuild/SOURCES/
