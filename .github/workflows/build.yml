@@ -7,8 +7,7 @@ run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on: workflow_dispatch
 env:
   IMG_REPO_URL: ghcr.io/jose-d/build-slurm-rocky8
-  APPTAINER_URL: https://github.com/apptainer/apptainer/releases/download/v1.2.4/apptainer_1.2.4_amd64.deb
-  APPTAINER_DEB: apptainer_1.2.4_amd64.deb
+  # version of openpmix and slurm to download and build together
   PMIX_VERSION: 4.2.7
   SLURM_VERSION: 23.02.6
   
