@@ -15,166 +15,21 @@ env:
   SLURM_VERSION: 23.02.6
   
 jobs:
-  build_base_image:
-    name: Build base apptainer image
+  job000_docker_base:
+    name: Build base docker image
     runs-on: ubuntu-latest
+    outputs:
+      image: ${{ env.DOCKER_REPO_BASE }}
     steps:
-      - name: Install apptainer
-        run: |
-          sudo apt update
-          sudo apt install -y wget dnf
-          cd /tmp
-          wget --quiet ${APPTAINER_URL}
-          sudo apt install -y ./${APPTAINER_DEB}
-
-      - uses: actions/checkout@v4
+      - name: Login to github image/package registry
+        uses: docker/login-action@v3
         with:
-          sparse-checkout: |
-            base-rpmbuild-rocky8.def
-          sparse-checkout-cone-mode: false
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: build base image in apptainer
-        run: |
-          sudo bash -c "echo '%_var /var' > /root/.rpmmacros"
-          sudo bash -c "echo '%_dbpath %{_var}/lib/rpm' >> /root/.rpmmacros"
-          mkdir -p ${GITHUB_WORKSPACE}/builddir
-          sudo rpm --initdb 
-          sudo apptainer build ${GITHUB_WORKSPACE}/builddir/base-rpmbuild-rocky8.sif ./base-rpmbuild-rocky8.def
-
-      - name: Upload sif file as artifact
-        uses: actions/upload-artifact@v3
+      - name: Build and push
+        uses: docker/build-push-action@v5
         with:
-          name: base-rpmbuild-rocky8.sif
-          path: ${{ github.workspace }}/builddir/base-rpmbuild-rocky8.sif
-
-      - name: Clean github.workspace
-        run: |
-          rm -rfv ${GITHUB_WORKSPACE}/*
-
-  build_slurm_build_stage1_image:
-    name: Build slurm stage1 build apptainer image
-    runs-on: ubuntu-latest
-    needs: build_base_image
-    steps:
-      - name: Install apptainer
-        run: |
-          sudo apt update
-          sudo apt install -y wget dnf
-          cd /tmp
-          wget --quiet ${APPTAINER_URL}
-          sudo apt install -y ./${APPTAINER_DEB}
-          
-      - uses: actions/download-artifact@v3
-        with:
-          name: base-rpmbuild-rocky8.sif
-
-      - uses: actions/checkout@v4
-        with:
-          sparse-checkout: build-slurm-rocky8_stage1.def
-          sparse-checkout-cone-mode: false
-          path: 'src'
-
-      - name: build slurm build stage1 image in apptainer
-        run: |
-          mkdir -p ${GITHUB_WORKSPACE}/builddir
-          apptainer build ${GITHUB_WORKSPACE}/builddir/build-slurm-rocky8_stage1.sif src/build-slurm-rocky8_stage1.def
-
-      - name: Upload sif file as artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: build-slurm-rocky8_stage1.sif
-          path: ${{ github.workspace }}/builddir/build-slurm-rocky8_stage1.sif
-  
-  build_pmix_build_image:
-    name: Build pmix apptainer image
-    runs-on: ubuntu-latest
-    needs: build_base_image
-    steps:
-      - name: Install apptainer
-        run: |
-          sudo apt update
-          sudo apt install -y wget dnf
-          cd /tmp
-          wget --quiet ${APPTAINER_URL}
-          sudo apt install -y ./${APPTAINER_DEB}
-          
-      - uses: actions/download-artifact@v3
-        with:
-          name: base-rpmbuild-rocky8.sif
-
-      - uses: actions/checkout@v4
-        with:
-          sparse-checkout: build-pmix-rocky8.def
-          sparse-checkout-cone-mode: false
-          path: 'src'
-
-      - name: build pmix build image in apptainer
-        run: |
-          mkdir -p ${GITHUB_WORKSPACE}/builddir
-          apptainer build ${GITHUB_WORKSPACE}/builddir/build-pmix-rocky8.sif src/build-pmix-rocky8.def
-
-      - name: Prepare base build env
-        run: |
-          mkdir -p ${HOME}/rpmbuild/SOURCES/
-          
-      - name: Download pmix and unpack it
-        run: |
-          export PMIX_RELEASE="$(date +%Y%m%d%H%M%S)"
-          wget --quiet https://github.com/openpmix/openpmix/releases/download/v${PMIX_VERSION}/pmix-${PMIX_VERSION}.tar.bz2
-          tar -xf ./pmix*
-          cp pmix-*.tar.bz2 $HOME/rpmbuild/SOURCES/
-          sed -i "s/^Release.*$/Release: ${PMIX_RELEASE}%{?dist}/g" pmix-*/contrib/pmix.spec
-          
-      - name: Build pmix rpms
-        run: |
-          apptainer exec --bind /home --bind ${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}/builddir/build-pmix-rocky8.sif rpmbuild --define 'build_all_in_one_rpm 0' --define 'configure_options --disable-per-user-config-files' -ba ./pmix-*/contrib/pmix.spec
-          mkdir ${GITHUB_WORKSPACE}/rpms
-          cp ${HOME}/rpmbuild/RPMS/x86_64/pmix-*.rpm ${GITHUB_WORKSPACE}/rpms/
-      - name: Archive production artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: pmix_rpms
-          path: |
-            ${{ github.workspace }}/rpms/*.rpm
-
-  build_slurm_build_stage2_image:
-    name: Build slurm stage2 build apptainer image
-    runs-on: ubuntu-latest
-    needs: 
-      - build_slurm_build_stage1_image
-      - build_pmix_build_image
-    steps:
-      - name: Install apptainer
-        run: |
-          sudo apt update
-          sudo apt install -y wget dnf
-          cd /tmp
-          wget --quiet ${APPTAINER_URL}
-          sudo apt install -y ./${APPTAINER_DEB}
-          
-      - uses: actions/download-artifact@v3
-        with:
-          name: build-slurm-rocky8_stage1.sif
-
-      - uses: actions/download-artifact@v3
-        with:
-          name: pmix_rpms
-          path: ~/rpms
-
-      - uses: actions/checkout@v4
-        with:
-          sparse-checkout: build-slurm-rocky8_stage2.def
-          sparse-checkout-cone-mode: false
-          path: 'src'
-
-      - name: build slurm build stage1 image in apptainer
-        run: |
-          mkdir -p ${GITHUB_WORKSPACE}/builddir
-          apptainer build ${GITHUB_WORKSPACE}/builddir/build-slurm-rocky8_stage2.sif src/build-slurm-rocky8_stage2.def
-      - name: Upload sif file as artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: build-slurm-rocky8_stage2.sif
-          path: ${{ github.workspace }}/builddir/build-slurm-rocky8_stage2.sif
-    
-    
+          context: "{{defaultContext}}:.github/dockerfiles/base"
+          push: false
+          tags: ${{ env.DOCKER_REPO_BASE }}
