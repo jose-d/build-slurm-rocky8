@@ -61,6 +61,68 @@ jobs:
           echo "Pushed into ${IMG_REPO_URL}:${BASEIMAGE_RELTAG}" >> $GITHUB_STEP_SUMMARY
           echo "BASEIMAGE_URL=${BASEIMAGE_URL}" >> $GITHUB_STEP_SUMMARY
         
+  build_slurm_build_image:
+    name: Build slurm build docker image
+    runs-on: ubuntu-latest
+    needs: build_base_build-image
+    env:
+      PERSISTENCE_FILE: build_slurm_build_image_vars.txt
+    steps:
+
+      - name: Download persistent data from build_base_build-image
+        uses: actions/download-artifact@v3
+        with:
+          name: build_base_build-image_vars.txt
+
+      - name: Read persistent data and add them into env, create SLURMIMAGE_RELTAG and save persistent data
+        shell: bash
+        run: |
+          source build_base_build-image_vars.txt
+          
+          SLURM_RELTAG="$(date +%Y%m%d%H%M%S)"
+          SLURMIMAGE_RELTAG="slurmimg_${PMIX_RELTAG}"
+          SLURMIMAGE_URL="${IMG_REPO_URL}:${SLURMIMAGE_RELTAG}"
+
+          # set job-wide env vars:
+          echo "SLURM_RELTAG=${SLURM_RELTAG}" >> $GITHUB_ENV
+          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" >> $GITHUB_ENV
+          echo "SLURMIMAGE_URL=${SLURMIMAGE_URL}" >> $GITHUB_ENV
+
+          # write into job summary
+          echo "SLURMIMAGE_RELTAG=${SLURMIMAGE_RELTAG}" >> $GITHUB_STEP_SUMMARY
+          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" >> $GITHUB_STEP_SUMMARY
+          echo "SLURMIMAGE_URL=${SLURMIMAGE_URL}" >> $GITHUB_STEP_SUMMARY
+          
+          # persistence file ops
+          touch ${PERSISTENCE_FILE}
+          echo "SLURMIMAGE_RELTAG=${SLURMIMAGE_RELTAG}" >> ${PERSISTENCE_FILE}
+          echo "SLURM_RELTAG=${SLURM_RELTAG}" >> ${PERSISTENCE_FILE}
+          echo "SLURMIMAGE_URL=${SLURMIMAGE_URL}" >> ${PERSISTENCE_FILE}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.PACKAGES_SECRET }}
+
+      - name: Set up Docker Build
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          build-args: |
+            BASE_IMAGE=${{ env.BASEIMAGE_URL }}
+          context: "{{defaultContext}}:.github/dockerfiles/slurm"
+          push: true
+          tags: ${{ env.SLURMIMAGE_URL }}
+
+      - name: Upload persistent data form job as an artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.PERSISTENCE_FILE }}
+          path: ${{ env.PERSISTENCE_FILE }}
 
   build_pmix_build_image:
     name: Build pmix build docker image
@@ -75,6 +137,7 @@ jobs:
           name: build_base_build-image_vars.txt
 
       - name: Read persistent data and add them into env, create PMIXIMAGE_RELTAG and save persistent data
+        shell: bash
         run: |
           source build_base_build-image_vars.txt
           
@@ -122,13 +185,6 @@ jobs:
         with:
           name: ${{ env.PERSISTENCE_FILE }}
           path: ${{ env.PERSISTENCE_FILE }}
-
-      - name: Print into step_summary
-        run: |
-          echo "Pushed into ${IMG_REPO_URL}:${PMIXIMAGE_RELTAG}" >> $GITHUB_STEP_SUMMARY
-          echo "Persistence file artifact: ${PERSISTENCE_FILE}" >> $GITHUB_STEP_SUMMARY
-          echo "IMGURL=${PMIXIMAGE_URL}" >> $GITHUB_STEP_SUMMARY
-          echo "IMGURL=${PMIXIMAGE_URL}" >> "$GITHUB_OUTPUT"
 
   build_pmix:
     name: Build pmix
