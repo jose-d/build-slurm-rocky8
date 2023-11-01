@@ -2,7 +2,7 @@
 
 # almost working docker version here: https://gist.github.com/jose-d/c69ea72ee8eea1d54fddb60da52c7bc1
 
-name: release
+name: Build Slurm
 run-name: ${{ github.actor }} is attempting to build pmix and slurm 🚀
 on: workflow_dispatch
 env:
