@@ -80,19 +80,23 @@ jobs:
           
           PMIX_RELTAG="$(date +%Y%m%d%H%M%S)"
           PMIXIMAGE_RELTAG="pmiximg_${PMIX_RELTAG}"
+          PMIXIMAGE_URL="${IMG_REPO_URL}:${PMIXIMAGE_RELTAG}"
 
           # set job-wide env vars:
           echo "PMIXIMAGE_RELTAG=${PMIXIMAGE_RELTAG}" >> $GITHUB_ENV
           echo "BASEIMAGE_URL=${BASEIMAGE_URL}" >> $GITHUB_ENV
+          echo "PMIXIMAGE_URL=${PMIXIMAGE_URL}" >> $GITHUB_ENV
 
           # write into job summary
           echo "PMIXIMAGE_RELTAG=${PMIXIMAGE_RELTAG}" >> $GITHUB_STEP_SUMMARY
           echo "BASEIMAGE_URL=${BASEIMAGE_URL}" >> $GITHUB_STEP_SUMMARY
+          echo "PMIXIMAGE_URL=${PMIXIMAGE_URL}" >> $GITHUB_STEP_SUMMARY
           
           # persistence file ops
           touch ${PERSISTENCE_FILE}
           echo "PMIXIMAGE_RELTAG=${PMIXIMAGE_RELTAG}" >> ${PERSISTENCE_FILE}
           echo "PMIX_RELTAG=${PMIX_RELTAG}" >> ${PERSISTENCE_FILE}
+          echo "PMIXIMAGE_URL=${PMIXIMAGE_URL}" >> ${PERSISTENCE_FILE}
             
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -123,7 +127,8 @@ jobs:
         run: |
           echo "Pushed into ${IMG_REPO_URL}:${PMIXIMAGE_RELTAG}" >> $GITHUB_STEP_SUMMARY
           echo "Persistence file artifact: ${PERSISTENCE_FILE}" >> $GITHUB_STEP_SUMMARY
-          echo "IMGURL=${IMG_REPO_URL}:${PMIXIMAGE_RELTAG}" >> "$GITHUB_OUTPUT"
+          echo "IMGURL=${PMIXIMAGE_URL}" >> $GITHUB_STEP_SUMMARY
+          echo "IMGURL=${PMIXIMAGE_URL}" >> "$GITHUB_OUTPUT"
 
   build_pmix:
     name: Build pmix
