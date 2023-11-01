@@ -128,14 +128,15 @@ jobs:
     runs-on: ubuntu-latest
     needs: build_pmix_build-image
     container:
-      image: ${{needs.build_pmix_build-image.outputs.IMGURL}}
+      image: ${{ needs.build_pmix_build-image.outputs.IMGURL }}
       options: --privileged
     steps:
                 
       - name: Download pmix and unpack it
+        env:
+          PMIX_RELEASE: ${{ needs.build_pmix_build-image.outputs.PMIX_RELTAG }}
         run: |
-          export PMIX_RELEASE=${{needs.build_pmix_build-image.outputs.PMIX_RELTAG}}
-          echo "PMIX_RELEASE: ${PMIX_RELEASE}"
+          echo "PMIX_RELEASE: ${PMIX_RELEASE}, PMIX_VERSION: ${PMIX_VERSION}"
           mkdir -p ${HOME}/rpmbuild/SOURCES/
           wget --quiet https://github.com/openpmix/openpmix/releases/download/v${PMIX_VERSION}/pmix-${PMIX_VERSION}.tar.bz2
           tar -xf ./pmix*
