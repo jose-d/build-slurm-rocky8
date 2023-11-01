@@ -135,6 +135,7 @@ jobs:
       - name: Download pmix and unpack it
         run: |
           export PMIX_RELEASE=${{needs.build_pmix_build-image.outputs.PMIX_RELTAG}}
+          echo "PMIX_RELEASE: ${PMIX_RELEASE}"
           mkdir -p ${HOME}/rpmbuild/SOURCES/
           wget --quiet https://github.com/openpmix/openpmix/releases/download/v${PMIX_VERSION}/pmix-${PMIX_VERSION}.tar.bz2
           tar -xf ./pmix*
