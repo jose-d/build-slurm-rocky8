@@ -19,17 +19,23 @@ jobs:
     name: Build base docker image
     runs-on: ubuntu-latest
     steps:
+      - name: Create BASEIMAGE_RELTAG and save it into file and github env
+        shell: bash
+        run: |
+          BASEIMAGE_RELTAG="$(date +%Y%m%d%H%M%S)"
+          echo "BASEIMAGE_RELTAG=${BASEIMAGE_RELTAG}" > build_base_build-image_vars.txt
+          echo "BASEIMAGE_RELTAG=${BASEIMAGE_RELTAG}" >> "$GITHUB_ENV"
+          
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: "{{defaultContext}}:.github/dockerfiles/base"
           push: false
-          tags: ghcr.io/jose-d/build-slurm-rocky8
+          tags: ghcr.io/jose-d/build-slurm-rocky8:${{ env.BASEIMAGE_RELTAG }}
 
       - name: Login to github registry and push image there
         shell: bash
         run: |
-          export BASEIMAGE_RELTAG="$(date +%Y%m%d%H%M%S)"
           echo ${{ secrets.PACKAGES_SECRET }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           echo $?
           docker push ghcr.io/jose-d/build-slurm-rocky8:${BASEIMAGE_RELTAG}
