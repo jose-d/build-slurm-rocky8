@@ -137,39 +137,16 @@ jobs:
     env:
       PERSISTENCE_FILE_PMIX: build_pmix_build_image_vars.txt
       PERSISTENCE_FILE: build_pmix_vars.txt
-    container:
-      image: ${{ needs.build_pmix_build_image.outputs.IMGURL }}
-      options: --privileged
+      GHCR_U: ${{ github.actor }}
+      GHCR_S: ${{ secrets.PACKAGES_SECRET }}
     steps:
-
       - name: Download persistent data from build_pmix_build_image
         uses: actions/download-artifact@v3
         with:
-          name: ${{ env.PERSISTENCE_FILE_PMIX }}     
-                
-      - name: Download pmix and unpack it
-        shell: bash
-        run: |
-          # some test
-          which gcc
-          cat /identity
+          name: ${{ env.PERSISTENCE_FILE_PMIX }}  
           
-          # load persistent data
-          cat ${PERSISTENCE_FILE_PMIX}
+      - name: Login to ghcr registry with docker
+        run: |
           source ${PERSISTENCE_FILE_PMIX}
-          echo "PMIX_RELTAG: ${PMIX_RELTAG}, PMIX_VERSION: ${PMIX_VERSION}"
-
-          mkdir -p ${HOME}/rpmbuild/SOURCES/
-          wget --quiet https://github.com/openpmix/openpmix/releases/download/v${PMIX_VERSION}/pmix-${PMIX_VERSION}.tar.bz2
-          tar -xf ./pmix*
-          cp pmix-*.tar.bz2 ${HOME}/rpmbuild/SOURCES/
-          sed -i "s/^Release.*$/Release: ${PMIX_RELTAG}%{?dist}/g" pmix-*/contrib/pmix.spec
-
-          cat pmix-*/contrib/pmix.spec
-          
-      - name: Build pmix rpms
-        shell: bash
-        run: |
-          rpmbuild --define 'build_all_in_one_rpm 0' --define 'configure_options --disable-per-user-config-files' -ba ./pmix-*/contrib/pmix.spec
-          mkdir ${GITHUB_WORKSPACE}/rpms
-          cp ${HOME}/rpmbuild/RPMS/x86_64/pmix-*.rpm ${GITHUB_WORKSPACE}/rpms/
+          echo $GHCR_S | docker login ghcr.io -u ${GHCR_U} --password-stdin
+          docker run --cidfile /tmp/docker_test.cid ${PMIXIMAGE_URL} echo "test"
