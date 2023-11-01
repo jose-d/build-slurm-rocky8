@@ -58,15 +58,18 @@ jobs:
         with:
           name: build_base_build-image_vars.txt
 
-      - name: Read persistent data and add them into env
+      - name: Read persistent data and add them into env, create PMIXIMAGE_RELTAG and save it into file and github env
         run: |
           source build_base_build-image_vars.txt
           echo "BASEIMAGE_RELTAG=${BASEIMAGE_RELTAG}" >> "$GITHUB_ENV"
-          echo 
+          PMIXIMAGE_RELTAG="pmiximg_$(date +%Y%m%d%H%M%S)"
+          echo "PMIXIMAGE_RELTAG=${PMIXIMAGE_RELTAG}" > build_pmix_build-image_vars.txt
+          echo "PMIXIMAGE_RELTAG=${PMIXIMAGE_RELTAG}" >> $GITHUB_ENV
+          echo "PMIXIMAGE_RELTAG=${PMIXIMAGE_RELTAG}" >> $GITHUB_STEP_SUMMARY
 
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: "{{defaultContext}}:.github/dockerfiles/pmix"
-          push: true
-          tags: ${{ env.BASEIMAGE_RELTAG }}
+          push: false
+          tags: ${{ env.IMG_REPO_URL }}:${{ env.PMIXIMAGE_RELTAG }}
