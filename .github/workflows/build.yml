@@ -4,9 +4,7 @@
 
 name: release
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
-on:
-  label:
-    types: [created]
+on: workflow_dispatch
 env:
   DOCKER_REPO_BASE: josed/build_slurm_base
   DOCKER_REPO_PMIX: josed/build_slurm_pmix
