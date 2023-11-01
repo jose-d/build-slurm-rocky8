@@ -11,7 +11,8 @@ env:
   # version of openpmix and slurm to download and build together
   PMIX_VERSION: 4.2.7
   SLURM_VERSION: 23.02.6
-  
+  CUDA_VERSION: 12-2
+
 jobs:
   build_base_build-image:
     name: Build base docker image
@@ -114,6 +115,7 @@ jobs:
         with:
           build-args: |
             BASE_IMAGE=${{ env.BASEIMAGE_URL }}
+            CUDA_VERSION=$${{ env.CUDA_VERSION }}
           context: "{{defaultContext}}:.github/dockerfiles/slurm"
           push: true
           tags: ${{ env.SLURMIMAGE_URL }}
