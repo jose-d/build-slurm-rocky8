@@ -3,8 +3,6 @@ ARG CUDA_VERSION=1
 
 FROM $BASE_IMAGE
 
-ENV CUDAV=$CUDA_VERSION
-
 RUN echo "CUDA version / CUDAV=$CUDAV"
 RUN echo "CUDA_VERSION: $CUDA_VERSION"
 
@@ -15,4 +13,4 @@ RUN dnf install -y createrepo_c gtk2-devel
 
 RUN dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo
 RUN dnf clean all
-RUN dnf -y install cuda-nvml-devel-${CUDAV} cuda-${CUDAV}
+RUN dnf -y install cuda-nvml-devel-$CUDA_VERSION cuda-$CUDA_VERSION
