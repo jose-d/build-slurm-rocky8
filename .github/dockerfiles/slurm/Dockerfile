@@ -4,6 +4,7 @@ ARG CUDA_VERSION="1-1"
 #FIXME: cuda version should be argument.
 
 FROM $BASE_IMAGE
+ENV CUDA_VERSION $CUDA_VERSION
 
 RUN echo "CUDA_VERSION: $CUDA_VERSION"
 
