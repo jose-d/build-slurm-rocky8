@@ -1,6 +1,9 @@
-FROM josed/build_slurm_base:latest
+ARG BASE_IMAGE=None
+ARG CUDA_VERSION=-1
 
-ENV CUDA_VERSION=12-2
+FROM $BASE_IMAGE
+
+ENV CUDA_VERSION=$CUDA_VERSION
 
 RUN dnf upgrade -y
 RUN dnf install -y epel-release
