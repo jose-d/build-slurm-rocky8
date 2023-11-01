@@ -91,6 +91,9 @@ jobs:
           echo "PMIXIMAGE_RELTAG=${PMIXIMAGE_RELTAG}" >> ${PERSISTENCE_FILE}
           echo "PMIX_RELTAG=${PMIX_RELTAG}" >> build_pmix_build-image_vars.txt
 
+      - name: Set up Docker Build
+        uses: docker/setup-buildx-action@v3
+        
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
@@ -100,7 +103,7 @@ jobs:
           push: false
           tags: ${{ env.IMG_REPO_URL }}:${{ env.PMIXIMAGE_RELTAG }}
           secrets: |
-            GIT_AUTH_TOKEN=${{ secrets.PACKAGES_SECRET }}            
+            "github_token=${{ secrets.PACKAGES_SECRET }}" 
 
       - name: Login to github registry and push image there
         shell: bash
