@@ -260,7 +260,15 @@ jobs:
           name: pmix_rpms
           path: pmix_rpms
 
+      - name: checkout slurm build script
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/scripts/build_slurm.sh
+          sparse-checkout-cone-mode: false
+          path: scripts
+
       - name: Download slurm tarball, unpack, patch spec file
+        shell: bash
         run: |
            source $PERSISTENCE_FILE_SLURM
            wget --quiet https://download.schedmd.com/slurm/slurm-${SLURM_VERSION}.tar.bz2
@@ -270,7 +278,9 @@ jobs:
            sed -i "s/^%global slurm_source_dir.*$/%global slurm_source_dir %{name}-%{version}/g" ./slurm*/slurm.spec
 
       - name: Login to ghcr registry with docker and do build
+        shell: bash
         run: |
+          set -x
           echo $GHCR_S | docker login ghcr.io -u ${GHCR_U} --password-stdin
           docker run --cidfile /tmp/docker_test.cid \
                      --env-file $PERSISTENCE_FILE_SLURM \
