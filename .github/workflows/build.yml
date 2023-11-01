@@ -108,15 +108,15 @@ jobs:
           build-args: |
             BASE_IMAGE=${{ env.BASEIMAGE_URL }}
           context: "{{defaultContext}}:.github/dockerfiles/pmix"
-          push: false
+          push: true
           tags: ${{ env.IMG_REPO_URL }}:${{ env.PMIXIMAGE_RELTAG }}
 
-      - name: Login to github registry and push image there
-        shell: bash
-        run: |
-          echo ${{ secrets.PACKAGES_SECRET }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-          echo $?
-          docker push ${IMG_REPO_URL}:${PMIXIMAGE_RELTAG}
+#      - name: Login to github registry and push image there
+#        shell: bash
+#        run: |
+#          echo ${{ secrets.PACKAGES_SECRET }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+#          echo $?
+#          docker push ${IMG_REPO_URL}:${PMIXIMAGE_RELTAG}
 
       - name: Upload persistent data form job as an artifact
         uses: actions/upload-artifact@v3
