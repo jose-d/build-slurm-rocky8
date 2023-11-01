@@ -274,7 +274,7 @@ jobs:
         run: |
           echo $GHCR_S | docker login ghcr.io -u ${GHCR_U} --password-stdin
           docker run --cidfile /tmp/docker_test.cid \
-                     --env-file $PERSISTENCE_FILE_PMIX \
+                     --env-file $PERSISTENCE_FILE_SLURM \
                      --env GITHUB_WORKSPACE=${GITHUB_WORKSPACE} \
                      -v ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} \
                      -v ${HOME}:${HOME} \
