@@ -3,7 +3,7 @@
 # almost working docker version here: https://gist.github.com/jose-d/c69ea72ee8eea1d54fddb60da52c7bc1
 
 name: release
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+run-name: ${{ github.actor }} is attempting to build pmix and slurm 🚀
 on: workflow_dispatch
 env:
   # github image repository url - used to cache docker images
@@ -82,12 +82,22 @@ jobs:
           echo $?
           docker push ${IMG_REPO_URL}:${PMIXIMAGE_RELTAG}
 
+      - name: Save persistent data
+        shell: bash
+        run: |
+          echo "PMIX_RELTAG=${PMIX_RELTAG}" > build_pmix_build-image.txt
+          echo "PMIXIMAGE_RELTAG=${PMIXIMAGE_RELTAG}" > build_pmix_build-image.txt
+
+      - name: Upload persistent data form job as an artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build_pmix_build-image.txt
+          path: build_pmix_build-image.txt
+
       - name: Print into step_summary
         run: |
           echo "Pushed into ${IMG_REPO_URL}:${PMIXIMAGE_RELTAG}" >> $GITHUB_STEP_SUMMARY
           echo "IMGURL=${IMG_REPO_URL}:${PMIXIMAGE_RELTAG}" >> "$GITHUB_OUTPUT"
-          echo "PMIX_RELTAG=${PMIX_RELTAG}" >> "$GITHUB_OUTPUT"
-
 
   build_slurm_build-image:
     name: Build slurm build docker image
@@ -131,17 +141,27 @@ jobs:
       image: ${{ needs.build_pmix_build-image.outputs.IMGURL }}
       options: --privileged
     steps:
+
+      - name: Download persistent data from build_pmix_build-image
+        uses: actions/download-artifact@v3
+        with:
+          name: build_pmix_build-image.txt
+
+      - name: Read persistent data and add them into env
+        run: |
+          source build_pmix_build-image.txt
                 
       - name: Download pmix and unpack it
         env:
           PMIX_RELEASE: ${{ needs.build_pmix_build-image.outputs.PMIX_RELTAG }}
         run: |
-          echo "PMIX_RELEASE: ${PMIX_RELEASE}, PMIX_VERSION: ${PMIX_VERSION}"
+          echo "PMIX_RELTAG: ${PMIX_RELTAG}, PMIX_VERSION: ${PMIX_VERSION}"
           mkdir -p ${HOME}/rpmbuild/SOURCES/
           wget --quiet https://github.com/openpmix/openpmix/releases/download/v${PMIX_VERSION}/pmix-${PMIX_VERSION}.tar.bz2
           tar -xf ./pmix*
           cp pmix-*.tar.bz2 ${HOME}/rpmbuild/SOURCES/
-          sed -i "s/^Release.*$/Release: ${PMIX_RELEASE}%{?dist}/g" pmix-*/contrib/pmix.spec
+          sed -i "s/^Release.*$/Release: ${PMIX_RELTAG}%{?dist}/g" pmix-*/contrib/pmix.spec
+          
       - name: Build pmix rpms
         run: |
           rpmbuild --define 'build_all_in_one_rpm 0' --define 'configure_options --disable-per-user-config-files' -ba ./pmix-*/contrib/pmix.spec
