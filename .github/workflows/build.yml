@@ -44,6 +44,9 @@ jobs:
         with:
           name: build_base_build-image_vars.txt
           path: build_base_build-image_vars.txt
+      
+      - name: Adding markdown
+        run: echo "Pushed into ghcr.io/jose-d/build-slurm-rocky8:${BASEIMAGE_RELTAG}" >> $GITHUB_STEP_SUMMARY
 
   build_pmix_build-image:
     name: Build pmix build docker image
