@@ -23,8 +23,14 @@ jobs:
         shell: bash
         run: |
           BASEIMAGE_RELTAG="baseimg_$(date +%Y%m%d%H%M%S)"
+          BASEIMAGE_URL="${IMG_REPO_URL}:${BASEIMAGE_RELTAG}"
+          
           echo "BASEIMAGE_RELTAG=${BASEIMAGE_RELTAG}" > ${PERSISTENCE_FILE}
+          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" >> ${PERSISTENCE_FILE}
+          
           echo "BASEIMAGE_RELTAG=${BASEIMAGE_RELTAG}" >> $GITHUB_ENV
+          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" >> $GITHUB_ENV
+          
           echo "BASEIMAGE_RELTAG=${BASEIMAGE_RELTAG}" >> $GITHUB_STEP_SUMMARY
           
       - name: Build and push
@@ -32,14 +38,14 @@ jobs:
         with:
           context: "{{defaultContext}}:.github/dockerfiles/base"
           push: false
-          tags: ${{ env.IMG_REPO_URL }}:${{ env.BASEIMAGE_RELTAG }}
+          tags: ${{ env.BASEIMAGE_URL }}
 
       - name: Login to github registry and push image there
         shell: bash
         run: |
           echo ${{ secrets.PACKAGES_SECRET }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           echo $?
-          docker push ${IMG_REPO_URL}:${BASEIMAGE_RELTAG}
+          docker push ${BASEIMAGE_URL}
           
       - name: Upload persistent data form job as an artifact
         uses: actions/upload-artifact@v3
@@ -50,6 +56,7 @@ jobs:
       - name: Print into step_summary
         run: |
           echo "Pushed into ${IMG_REPO_URL}:${BASEIMAGE_RELTAG}" >> $GITHUB_STEP_SUMMARY
+          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" >> $GITHUB_STEP_SUMMARY
         
 
   build_pmix_build-image:
@@ -73,9 +80,11 @@ jobs:
 
           # set job-wide env vars:
           echo "PMIXIMAGE_RELTAG=${PMIXIMAGE_RELTAG}" >> $GITHUB_ENV
+          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" >> $GITHUB_ENV
 
           # write into job summary
           echo "PMIXIMAGE_RELTAG=${PMIXIMAGE_RELTAG}" >> $GITHUB_STEP_SUMMARY
+          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" >> $GITHUB_STEP_SUMMARY
           
           # persistence file ops
           touch ${PERSISTENCE_FILE}
@@ -85,6 +94,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
+          build-args: |
+            BASE_IMAGE=${{ env.BASEIMAGE_URL }}
           context: "{{defaultContext}}:.github/dockerfiles/pmix"
           push: false
           tags: ${{ env.IMG_REPO_URL }}:${{ env.PMIXIMAGE_RELTAG }}
