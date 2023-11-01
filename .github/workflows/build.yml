@@ -154,7 +154,7 @@ jobs:
           
       - name: Login to ghcr registry with docker
         run: |
-          apt -y install tree
+          sudo apt -y install tree
           tree .
           source ${PERSISTENCE_FILE_PMIX}
           echo $GHCR_S | docker login ghcr.io -u ${GHCR_U} --password-stdin
