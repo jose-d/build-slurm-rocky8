@@ -16,12 +16,14 @@ jobs:
   build_base_build-image:
     name: Build base docker image
     runs-on: ubuntu-latest
+    env:
+      PERSISTENCE_FILE: build_base_build-image_vars.txt
     steps:
       - name: Create BASEIMAGE_RELTAG and save it into file and github env
         shell: bash
         run: |
           BASEIMAGE_RELTAG="baseimg_$(date +%Y%m%d%H%M%S)"
-          echo "BASEIMAGE_RELTAG=${BASEIMAGE_RELTAG}" > build_base_build-image_vars.txt
+          echo "BASEIMAGE_RELTAG=${BASEIMAGE_RELTAG}" > ${PERSISTENCE_FILE}
           echo "BASEIMAGE_RELTAG=${BASEIMAGE_RELTAG}" >> $GITHUB_ENV
           echo "BASEIMAGE_RELTAG=${BASEIMAGE_RELTAG}" >> $GITHUB_STEP_SUMMARY
           
@@ -42,11 +44,13 @@ jobs:
       - name: Upload persistent data form job as an artifact
         uses: actions/upload-artifact@v3
         with:
-          name: build_base_build-image_vars.txt
-          path: build_base_build-image_vars.txt
+          name: ${{ env.PERSISTENCE_FILE }}
+          path: ${{ env.PERSISTENCE_FILE }}
       
       - name: Print into step_summary
-        run: echo "Pushed into ${IMG_REPO_URL}:${BASEIMAGE_RELTAG}" >> $GITHUB_STEP_SUMMARY
+        run: |
+          echo "Pushed into ${IMG_REPO_URL}:${BASEIMAGE_RELTAG}" >> $GITHUB_STEP_SUMMARY
+        
 
   build_pmix_build-image:
     name: Build pmix build docker image
