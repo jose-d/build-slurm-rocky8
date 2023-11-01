@@ -163,6 +163,7 @@ jobs:
         run: |
           # some test
           which gcc
+          cat /.dockerenv
           
           # load persistent data
           cat ${PERSISTENCE_FILE_PMIX}
