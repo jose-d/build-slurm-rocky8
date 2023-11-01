@@ -17,6 +17,7 @@ jobs:
     env:
       GHCR_U: ${{ github.actor }}
       GHCR_S: ${{ secrets.PACKAGES_SECRET }}
+      PMIXIMAGE_URL: ghcr.io/jose-d/build-slurm-rocky8:pmiximg_20231101163222
     steps:
 
       - name: checkout pmix build script
@@ -33,4 +34,4 @@ jobs:
           tree .github/
           source ${PERSISTENCE_FILE_PMIX}
           echo $GHCR_S | docker login ghcr.io -u ${GHCR_U} --password-stdin
-          docker run --cidfile /tmp/docker_test.cid --env-file $PERSISTENCE_FILE_PMIX -v ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} -v ${HOME}:${HOME} -w ${GITHUB_WORKSPACE} ${PMIXIMAGE_URL} /bin/bash script/build_pmix.sh
+          docker run --cidfile /tmp/docker_test.cid -v ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} -v ${HOME}:${HOME} -w ${GITHUB_WORKSPACE} ${PMIXIMAGE_URL} /bin/bash script/build_pmix.sh
