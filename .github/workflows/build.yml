@@ -280,9 +280,10 @@ jobs:
       - name: Login to ghcr registry with docker and do build
         shell: bash
         run: |
-          set -x
-          echo $GHCR_S | docker login ghcr.io -u ${GHCR_U} --password-stdin
-          docker run --cidfile /tmp/docker_test.cid \
+            set -x
+            source $PERSISTENCE_FILE_SLURM
+            echo $GHCR_S | docker login ghcr.io -u ${GHCR_U} --password-stdin
+            docker run --cidfile /tmp/docker_test.cid \
                      --env-file $PERSISTENCE_FILE_SLURM \
                      --env GITHUB_WORKSPACE=${GITHUB_WORKSPACE} \
                      -v ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} \
