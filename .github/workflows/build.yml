@@ -214,7 +214,7 @@ jobs:
         run: |
           source ${PERSISTENCE_FILE_PMIX}
           echo $GHCR_S | docker login ghcr.io -u ${GHCR_U} --password-stdin
-          docker run --cidfile /tmp/docker_test.cid --env-file $PERSISTENCE_FILE_PMIX --env PMIX_VERSION=${PMIX_VERSION} -v ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} -v ${HOME}:${HOME} -w ${GITHUB_WORKSPACE} ${PMIXIMAGE_URL} /bin/bash scripts/.github/scripts/build_pmix.sh
+          docker run --cidfile /tmp/docker_test.cid --env-file $PERSISTENCE_FILE_PMIX --env GITHUB_WORKSPACE=${GITHUB_WORKSPACE} --env PMIX_VERSION=${PMIX_VERSION} -v ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} -v ${HOME}:${HOME} -w ${GITHUB_WORKSPACE} ${PMIXIMAGE_URL} /bin/bash scripts/.github/scripts/build_pmix.sh
           - name: Archive production artifacts
 
       - name: Upload pmix rpms as artifacts
