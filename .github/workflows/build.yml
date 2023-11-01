@@ -47,6 +47,10 @@ jobs:
           name: base-rpmbuild-rocky8.sif
           path: ${{ github.workspace }}/builddir/base-rpmbuild-rocky8.sif
 
+      - name: Clean github.workspace
+        run: |
+          rm -rfv ${GITHUB_WORKSPACE}/*
+
   build_slurm_build_stage1_image:
     name: Build slurm stage1 build apptainer image
     runs-on: ubuntu-latest
