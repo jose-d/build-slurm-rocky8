@@ -144,9 +144,15 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ${{ env.PERSISTENCE_FILE_PMIX }}  
+
+      - name: checkout pmix build script
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/scripts/build_pmix.sh
+          sparse-checkout-cone-mode: false
           
       - name: Login to ghcr registry with docker
         run: |
           source ${PERSISTENCE_FILE_PMIX}
           echo $GHCR_S | docker login ghcr.io -u ${GHCR_U} --password-stdin
-          docker run --cidfile /tmp/docker_test.cid -v $(pwd):$(pwd) -v ${HOME}:${HOME} -w $(pwd) ${PMIXIMAGE_URL} echo "test"
+          docker run --cidfile /tmp/docker_test.cid -v $(pwd):$(pwd) -v ${HOME}:${HOME} -w $(pwd) ${PMIXIMAGE_URL} /bin/bash build_pmix.sh
