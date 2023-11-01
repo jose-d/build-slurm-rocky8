@@ -150,12 +150,10 @@ jobs:
         with:
           sparse-checkout: .github/scripts/build_pmix.sh
           sparse-checkout-cone-mode: false
-          path: 'script'
+          path: scripts
           
       - name: Login to ghcr registry with docker
         run: |
-          sudo apt -y install tree
-          tree .
           source ${PERSISTENCE_FILE_PMIX}
           echo $GHCR_S | docker login ghcr.io -u ${GHCR_U} --password-stdin
-          docker run --cidfile /tmp/docker_test.cid --env-file $PERSISTENCE_FILE_PMIX -v ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} -v ${HOME}:${HOME} -w ${GITHUB_WORKSPACE} ${PMIXIMAGE_URL} /bin/bash script/build_pmix.sh
+          docker run --cidfile /tmp/docker_test.cid --env-file $PERSISTENCE_FILE_PMIX -v ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} -v ${HOME}:${HOME} -w ${GITHUB_WORKSPACE} ${PMIXIMAGE_URL} /bin/bash scripts/.github/scripts/build_pmix.sh
