@@ -22,7 +22,7 @@ jobs:
         run: |
           BASEIMAGE_RELTAG="baseimg_$(date +%Y%m%d%H%M%S)"
           echo "BASEIMAGE_RELTAG=${BASEIMAGE_RELTAG}" > build_base_build-image_vars.txt
-          echo "BASEIMAGE_RELTAG=${BASEIMAGE_RELTAG}" >> "$GITHUB_ENV"
+          echo "BASEIMAGE_RELTAG=${BASEIMAGE_RELTAG}" >> $GITHUB_ENV
           echo "BASEIMAGE_RELTAG=${BASEIMAGE_RELTAG}" >> $GITHUB_STEP_SUMMARY
           
       - name: Build and push
