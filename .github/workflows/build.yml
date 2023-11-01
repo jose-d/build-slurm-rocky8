@@ -58,13 +58,15 @@ jobs:
         with:
           name: build_base_build-image_vars.txt
 
-      - name: Read persistent data and add them into env, create PMIXIMAGE_RELTAG and save it into file and github env
+      - name: Read persistent data and add them into env, create PMIXIMAGE_RELTAG and save persistent data
         run: |
           source build_base_build-image_vars.txt
           echo "BASEIMAGE_RELTAG=${BASEIMAGE_RELTAG}" >> "$GITHUB_ENV"
           PMIX_RELTAG="$(date +%Y%m%d%H%M%S)"
           PMIXIMAGE_RELTAG="pmiximg_${PMIX_RELTAG}"
+          touch build_pmix_build-image_vars.txt
           echo "PMIXIMAGE_RELTAG=${PMIXIMAGE_RELTAG}" > build_pmix_build-image_vars.txt
+          echo "PMIX_RELTAG=${PMIX_RELTAG}" >> build_pmix_build-image_vars.txt
           echo "PMIXIMAGE_RELTAG=${PMIXIMAGE_RELTAG}" >> $GITHUB_ENV
           echo "PMIXIMAGE_RELTAG=${PMIXIMAGE_RELTAG}" >> $GITHUB_STEP_SUMMARY
 
@@ -82,18 +84,11 @@ jobs:
           echo $?
           docker push ${IMG_REPO_URL}:${PMIXIMAGE_RELTAG}
 
-      - name: Save persistent data
-        shell: bash
-        run: |
-          touch build_pmix_build-image.txt
-          echo "PMIX_RELTAG=${PMIX_RELTAG}" >> build_pmix_build-image.txt
-          echo "PMIXIMAGE_RELTAG=${PMIXIMAGE_RELTAG}" >> build_pmix_build-image.txt
-
       - name: Upload persistent data form job as an artifact
         uses: actions/upload-artifact@v3
         with:
-          name: build_pmix_build-image.txt
-          path: build_pmix_build-image.txt
+          name: build_pmix_build-image_vars.txt
+          path: build_pmix_build-image_vars.txt
 
       - name: Print into step_summary
         run: |
@@ -146,11 +141,10 @@ jobs:
       - name: Download persistent data from build_pmix_build-image
         uses: actions/download-artifact@v3
         with:
-          name: build_pmix_build-image.txt        
+          name: build_pmix_build-image_vars.txt     
                 
       - name: Download pmix and unpack it
-        env:
-          PMIX_RELEASE: ${{ needs.build_pmix_build-image.outputs.PMIX_RELTAG }}
+        shell: bash
         run: |
           cat build_pmix_build-image.txt
           source build_pmix_build-image.txt
@@ -162,6 +156,7 @@ jobs:
           sed -i "s/^Release.*$/Release: ${PMIX_RELTAG}%{?dist}/g" pmix-*/contrib/pmix.spec
           
       - name: Build pmix rpms
+        shell: bash
         run: |
           rpmbuild --define 'build_all_in_one_rpm 0' --define 'configure_options --disable-per-user-config-files' -ba ./pmix-*/contrib/pmix.spec
           mkdir ${GITHUB_WORKSPACE}/rpms
