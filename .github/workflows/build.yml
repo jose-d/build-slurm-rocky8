@@ -45,7 +45,7 @@ jobs:
           name: build_base_build-image_vars.txt
           path: build_base_build-image_vars.txt
       
-      - name: Adding markdown
+      - name: Print into step_summary
         run: echo "Pushed into ${IMG_REPO_URL}:${BASEIMAGE_RELTAG}" >> $GITHUB_STEP_SUMMARY
 
   build_pmix_build-image:
