@@ -99,6 +99,8 @@ jobs:
           context: "{{defaultContext}}:.github/dockerfiles/pmix"
           push: false
           tags: ${{ env.IMG_REPO_URL }}:${{ env.PMIXIMAGE_RELTAG }}
+          secrets: |
+            GIT_AUTH_TOKEN=${{ secrets.PACKAGES_SECRET }}            
 
       - name: Login to github registry and push image there
         shell: bash
