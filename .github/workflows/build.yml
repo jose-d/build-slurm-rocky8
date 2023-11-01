@@ -114,7 +114,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           build-args: |
-            CUDA_VERSION=12-2
+            CUDA_VERSION="12-2"
             BASE_IMAGE=${{ env.BASEIMAGE_URL }}
           context: "{{defaultContext}}:.github/dockerfiles/slurm"
           push: true
