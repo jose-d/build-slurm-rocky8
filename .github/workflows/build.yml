@@ -6,9 +6,7 @@ name: release
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on: workflow_dispatch
 env:
-  DOCKER_REPO_BASE: josed/build_slurm_base
-  DOCKER_REPO_PMIX: josed/build_slurm_pmix
-  DOCKER_REPO_SLURM: josed/build_slurm_slurm
+  IMG_REPO_URL: ghcr.io/jose-d/build-slurm-rocky8
   APPTAINER_URL: https://github.com/apptainer/apptainer/releases/download/v1.2.4/apptainer_1.2.4_amd64.deb
   APPTAINER_DEB: apptainer_1.2.4_amd64.deb
   PMIX_VERSION: 4.2.7
@@ -22,7 +20,7 @@ jobs:
       - name: Create BASEIMAGE_RELTAG and save it into file and github env
         shell: bash
         run: |
-          BASEIMAGE_RELTAG="$(date +%Y%m%d%H%M%S)"
+          BASEIMAGE_RELTAG="baseimg_$(date +%Y%m%d%H%M%S)"
           echo "BASEIMAGE_RELTAG=${BASEIMAGE_RELTAG}" > build_base_build-image_vars.txt
           echo "BASEIMAGE_RELTAG=${BASEIMAGE_RELTAG}" >> "$GITHUB_ENV"
           
@@ -31,19 +29,14 @@ jobs:
         with:
           context: "{{defaultContext}}:.github/dockerfiles/base"
           push: false
-          tags: ghcr.io/jose-d/build-slurm-rocky8:${{ env.BASEIMAGE_RELTAG }}
+          tags: ${{ env.IMG_REPO_URL }}:${{ env.BASEIMAGE_RELTAG }}
 
       - name: Login to github registry and push image there
         shell: bash
         run: |
           echo ${{ secrets.PACKAGES_SECRET }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           echo $?
-          docker push ghcr.io/jose-d/build-slurm-rocky8:${BASEIMAGE_RELTAG}
-
-      - name: Save persistent data from job
-        shell: bash
-        run: |
-          echo "BASEIMAGE_RELTAG=\"${BASEIMAGE_RELTAG}\"" > build_base_build-image_vars.txt
+          docker push ${IMG_REPO_URL}:${BASEIMAGE_RELTAG}
           
       - name: Upload persistent data form job as an artifact
         uses: actions/upload-artifact@v3
@@ -52,7 +45,7 @@ jobs:
           path: build_base_build-image_vars.txt
       
       - name: Adding markdown
-        run: echo "Pushed into ghcr.io/jose-d/build-slurm-rocky8:${BASEIMAGE_RELTAG}" >> $GITHUB_STEP_SUMMARY
+        run: echo "Pushed into ${IMG_REPO_URL}:${BASEIMAGE_RELTAG}" >> $GITHUB_STEP_SUMMARY
 
   build_pmix_build-image:
     name: Build pmix build docker image
