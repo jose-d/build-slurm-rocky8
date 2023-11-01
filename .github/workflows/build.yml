@@ -115,7 +115,7 @@ jobs:
         with:
           build-args: |
             BASE_IMAGE=${{ env.BASEIMAGE_URL }}
-            CUDA_VERSION=$${{ env.CUDA_VERSION }}
+            CUDA_VERSION=${{ env.CUDA_VERSION }}
           context: "{{defaultContext}}:.github/dockerfiles/slurm"
           push: true
           tags: ${{ env.SLURMIMAGE_URL }}
