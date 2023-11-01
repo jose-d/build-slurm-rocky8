@@ -82,7 +82,9 @@ jobs:
           docker push ${IMG_REPO_URL}:${PMIXIMAGE_RELTAG}
 
       - name: Print into step_summary
-        run: echo "Pushed into ${IMG_REPO_URL}:${PMIXIMAGE_RELTAG}" >> $GITHUB_STEP_SUMMARY
+        run: |
+          echo "Pushed into ${IMG_REPO_URL}:${PMIXIMAGE_RELTAG}" >> $GITHUB_STEP_SUMMARY
+          echo "IMGURL=${IMG_REPO_URL}:${PMIXIMAGE_RELTAG}" >> "$GITHUB_OUTPUT"
 
 
   build_slurm_build-image:
@@ -119,6 +121,14 @@ jobs:
           echo $?
           docker push ${IMG_REPO_URL}:${SLURMIMAGE_RELTAG}
 
-      - name: Print into step_summary
-        run: echo "Pushed into ${IMG_REPO_URL}:${SLURMIMAGE_RELTAG}" >> $GITHUB_STEP_SUMMARY
-  
+  build_pmix:
+    name: Build pmix
+    runs-on: ubuntu-latest
+    needs: build_pmix_build-image
+    container:
+      image: ${{needs.build_pmix_build-image.outputs.IMGURL}}
+      options: --privileged
+    steps:
+      - name: Prepare base build env
+        run: |
+          echo "Hello world"
