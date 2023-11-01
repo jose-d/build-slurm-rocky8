@@ -149,4 +149,4 @@ jobs:
         run: |
           source ${PERSISTENCE_FILE_PMIX}
           echo $GHCR_S | docker login ghcr.io -u ${GHCR_U} --password-stdin
-          docker run --cidfile /tmp/docker_test.cid ${PMIXIMAGE_URL} echo "test"
+          docker run --cidfile /tmp/docker_test.cid -v $(pwd):$(pwd) -v ${HOME}:${HOME} -w $(pwd) ${PMIXIMAGE_URL} echo "test"
