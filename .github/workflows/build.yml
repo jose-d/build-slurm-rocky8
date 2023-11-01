@@ -4,7 +4,9 @@
 
 name: release
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
-on: [push]
+on:
+  label:
+    types: [created]
 env:
   DOCKER_REPO_BASE: josed/build_slurm_base
   DOCKER_REPO_PMIX: josed/build_slurm_pmix
@@ -15,7 +17,7 @@ env:
   SLURM_VERSION: 23.02.6
   
 jobs:
-  job000_docker_base:
+  build_base_build-image:
     name: Build base docker image
     runs-on: ubuntu-latest
     steps:
@@ -27,7 +29,43 @@ jobs:
           tags: ghcr.io/jose-d/build-slurm-rocky8
 
       - name: Login to github registry and push image there
+        shell: bash
         run: |
+          export BASEIMAGE_RELTAG="$(date +%Y%m%d%H%M%S)"
           echo ${{ secrets.PACKAGES_SECRET }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           echo $?
-          docker push ghcr.io/jose-d/build-slurm-rocky8:latest
+          docker push ghcr.io/jose-d/build-slurm-rocky8:${BASEIMAGE_RELTAG}
+
+      - name: Save persistent data from job
+        shell: bash
+        run: |
+          echo "BASEIMAGE_RELTAG=\"${BASEIMAGE_RELTAG}\"" > build_base_build-image_vars.txt
+          
+      - name: Upload persistent data form job as an artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build_base_build-image_vars.txt
+          path: build_base_build-image_vars.txt
+
+  build_pmix_build-image:
+    name: Build pmix build docker image
+    runs-on: ubuntu-latest
+    needs: build_base_build-image
+    steps:
+      - name: Download persistent data from build_base_build-image
+        uses: actions/download-artifact@v3
+        with:
+          name: build_base_build-image_vars.txt
+
+      - name: Read persistent data and add them into env
+        run: |
+          source build_base_build-image_vars.txt
+          echo "BASEIMAGE_RELTAG=${BASEIMAGE_RELTAG}" >> "$GITHUB_ENV"
+          echo 
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: "{{defaultContext}}:.github/dockerfiles/pmix"
+          push: true
+          tags: ${{ env.BASEIMAGE_RELTAG }}
