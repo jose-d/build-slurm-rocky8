@@ -12,6 +12,4 @@ RUN dnf install -y createrepo_c gtk2-devel
 
 RUN dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo
 RUN dnf clean all
-RUN dnf -y install cuda-nvml-devel-${CUDA_VERSION} cuda-${CUDA_VERSION}
-
-CMD ["echo", "Slurm_build_image"]
+RUN dnf -y install cuda-nvml-devel-$CUDA_VERSION cuda-$CUDA_VERSION
