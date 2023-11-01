@@ -67,11 +67,14 @@ jobs:
       - name: Read persistent data and add them into env, create PMIXIMAGE_RELTAG and save persistent data
         run: |
           source build_base_build-image_vars.txt
-          echo "BASEIMAGE_RELTAG=${BASEIMAGE_RELTAG}" >> "$GITHUB_ENV"
+          
           PMIX_RELTAG="$(date +%Y%m%d%H%M%S)"
           PMIXIMAGE_RELTAG="pmiximg_${PMIX_RELTAG}"
-          
+
+          # set job-wide env vars:
           echo "PMIXIMAGE_RELTAG=${PMIXIMAGE_RELTAG}" >> $GITHUB_ENV
+
+          # write into job summary
           echo "PMIXIMAGE_RELTAG=${PMIXIMAGE_RELTAG}" >> $GITHUB_STEP_SUMMARY
           
           # persistence file ops
@@ -158,6 +161,9 @@ jobs:
       - name: Download pmix and unpack it
         shell: bash
         run: |
+          # some test
+          which gcc
+          
           # load persistent data
           cat ${PERSISTENCE_FILE_PMIX}
           source ${PERSISTENCE_FILE_PMIX}
@@ -168,6 +174,8 @@ jobs:
           tar -xf ./pmix*
           cp pmix-*.tar.bz2 ${HOME}/rpmbuild/SOURCES/
           sed -i "s/^Release.*$/Release: ${PMIX_RELTAG}%{?dist}/g" pmix-*/contrib/pmix.spec
+
+          cat pmix-*/contrib/pmix.spec
           
       - name: Build pmix rpms
         shell: bash
