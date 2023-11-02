@@ -10,7 +10,7 @@ env:
   PMIX_VERSION: 4.2.7
   SLURM_VERSION: 23.02.6
   # version of CUDA to take NVML library from:
-  NVML_VERSION: '12-2'
+  NVML_VERSION: 12-2
 
 jobs:
   build_base_build-image:
@@ -25,11 +25,9 @@ jobs:
           BASEIMAGE_RELTAG="baseimg_$(date +%Y%m%d%H%M%S)"
           BASEIMAGE_URL="${IMG_REPO_URL}:${BASEIMAGE_RELTAG}"
           
-          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" >> $PERSISTENCE_FILE
-          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" >> $GITHUB_ENV
+          touch $PERSISTENCE_FILE
+          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" | tee --append $PERSISTENCE_FILE $GITHUB_ENV $GITHUB_STEP_SUMMARY
           
-          echo "Created base image with BASEIMAGE_URL=${BASEIMAGE_URL}" >> $GITHUB_STEP_SUMMARY
-
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -291,19 +289,13 @@ jobs:
     needs:
       - build_slurm
       - build_pmix
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Download persistent data from PERSISTENCE_FILE_PMIX
+      - name: Download all artifacts
         uses: actions/download-artifact@v3
-        with:
-          name: ${{ env.PERSISTENCE_FILE_PMIX }}
-
-      - name: Download persistent data from PERSISTENCE_FILE_SLURM
-        uses: actions/download-artifact@v3
-        with:
-          name: ${{ env.PERSISTENCE_FILE_SLURM }}
 
       - name: Read persistent data and add them into env
         shell: bash
@@ -314,17 +306,11 @@ jobs:
           echo "SLURM_VERSION=${SLURM_VERSION}" | tee --append $GITHUB_ENV
           echo "PMIX_VERSION=$PMIX_VERSION" | tee --append $GITHUB_ENV
 
-      - name: Download pmix rpms artifact
-        uses: actions/download-artifact@v3
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.1
         with:
-          name: pmix_rpms
-          path: pmix_rpms
-
-      - name: Download slurm rpms artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: slurm_rpms
-          path: slurm_rpms
+          github_token: ${{ secrets.GITHUB_TOKEN }}
         
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -332,8 +318,7 @@ jobs:
           body: Body text test
           name: slurm-${{ env.SLURM_VERSION }} with pmix-${{ env.PMIX_VERSION }}
           files: |
-            pmix_rpms/*.rpm
-            slurm_rpms/*.rpm
+            *.rpm
             
     
 
