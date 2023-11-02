@@ -314,6 +314,16 @@ jobs:
           name: slurm_rpms
           path: rpms
 
+      - name: Download pmix_build.log
+        uses: actions/download-artifact@v3
+        with:
+          name: pmix_build.log
+
+      - name: Download slurm_build.log
+        uses: actions/download-artifact@v3
+        with:
+          name: slurm_build.log
+
 
       - name: Read persistent data and add them into env
         shell: bash
