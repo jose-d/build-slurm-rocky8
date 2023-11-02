@@ -282,6 +282,61 @@ jobs:
           echo "* version: $PMIX_VERSION" | tee --append $GITHUB_STEP_SUMMARY
           echo "* release: $PMIX_RELTAG" | tee --append $GITHUB_STEP_SUMMARY
 
+  publish_files:
+    name: Publish build files in release
+    runs-on: ubuntu-latest
+    env:
+      PERSISTENCE_FILE_PMIX: build_pmix_build_image_vars.txt
+      PERSISTENCE_FILE_SLURM: build_slurm_build_image_vars.txt
+    needs:
+      - build_slurm
+      - build_pmix
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Download persistent data from PERSISTENCE_FILE_PMIX
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.PERSISTENCE_FILE_PMIX }}
+
+      - name: Download persistent data from PERSISTENCE_FILE_SLURM
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.PERSISTENCE_FILE_SLURM }}
+
+      - name: Read persistent data and add them into env
+        shell: bash
+        run: |
+          source ${PERSISTENCE_FILE_PMIX}
+          source ${PERSISTENCE_FILE_SLURM}
+          
+          echo "SLURM_VERSION=${SLURM_VERSION}" | tee --append $GITHUB_ENV
+          echo "PMIX_VERSION=$PMIX_VERSION" | tee --append $GITHUB_ENV
+
+      - name: Download pmix rpms artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: pmix_rpms
+          path: pmix_rpms
+
+      - name: Download slurm rpms artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: slurm_rpms
+          path: slurm_rpms
+        
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          body: Body text test
+          name: slurm-${{ env.SLURM_VERSION }} with pmix-${{ PMIX_VERSION }}
+          files: |
+            pmix_rpms/*.rpm
+            slurm_rpms/*.rpm
+            
+    
+
 
 
 
