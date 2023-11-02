@@ -16,7 +16,7 @@ cp  ${GITHUB_WORKSPACE}/pmix-*.tar.bz2 ${HOME}/rpmbuild/SOURCES/
 # do rpmbuild
 rpmbuild --define 'build_all_in_one_rpm 0' \
          --define 'configure_options --disable-per-user-config-files' \
-         -ba ./pmix-*/contrib/pmix.spec
+         -ba ./pmix-*/contrib/pmix.spec &> ${GITHUB_WORKSPACE}/pmix_build.log
 
 mkdir "${GITHUB_WORKSPACE}/rpms"
 cp ${HOME}/rpmbuild/RPMS/x86_64/*.rpm ${GITHUB_WORKSPACE}/rpms/

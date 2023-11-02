@@ -205,6 +205,13 @@ jobs:
                      -v ${HOME}:${HOME} \
                      -w ${GITHUB_WORKSPACE} ${PMIXIMAGE_URL} /bin/bash scripts/.github/scripts/build_pmix.sh
 
+      - name: Upload build log as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: pmix_build.log
+          if-no-files-found: error
+          path: ${{ github.workspace }}/pmix_build.log
+
       - name: Upload pmix rpms as artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -264,6 +271,13 @@ jobs:
                      -v ${HOME}:${HOME} \
                      -w ${GITHUB_WORKSPACE} ${SLURMIMAGE_URL} /bin/bash scripts/.github/scripts/build_slurm.sh
 
+      - name: Upload build log as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: slurm_build.log
+          if-no-files-found: error
+          path: ${{ github.workspace }}/slurm_build.log
+
       - name: Upload slurm rpms as artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -321,8 +335,12 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           body: Body text test
+          tag_name: ${{ steps.tag_version.outputs.new_tag }}
           name: "slurm-${{ env.SLURM_VERSION }} with pmix-${{ env.PMIX_VERSION }}, reltag: ${{ env.RELTAG }}"
-          files: rpms/*.rpm
+          files: |
+            rpms/*.rpm
+            slurm_build.log
+            pmix_build.log
             
     
 
