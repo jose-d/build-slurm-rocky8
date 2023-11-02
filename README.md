@@ -1,5 +1,5 @@
 # build-slurm-rocky8
-Build slurm rpms at Rocky8 with nvml support.
+Build pmi-x and slurm rpms for Rocky8 with nvml support.
 
 ## Automatic build using Github Actions
 
