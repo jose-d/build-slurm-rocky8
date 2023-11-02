@@ -1,12 +1,10 @@
 ARG BASE_IMAGE=None
-ARG CUDA_VERSION="1-1"
-
-#FIXME: cuda version should be argument.
+ARG NVML_VERSION
 
 FROM $BASE_IMAGE
-ENV CUDA_VERSION $CUDA_VERSION
+ENV NVML_VERSION $NVML_VERSION
 
-RUN echo "CUDA_VERSION: $CUDA_VERSION"
+RUN echo "CUDA_VERSION: $NVML_VERSION"
 
 RUN dnf upgrade -y
 RUN dnf install -y epel-release
