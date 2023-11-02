@@ -24,13 +24,10 @@ jobs:
           BASEIMAGE_RELTAG="baseimg_$(date +%Y%m%d%H%M%S)"
           BASEIMAGE_URL="${IMG_REPO_URL}:${BASEIMAGE_RELTAG}"
           
-          echo "BASEIMAGE_RELTAG=${BASEIMAGE_RELTAG}" > ${PERSISTENCE_FILE}
-          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" >> ${PERSISTENCE_FILE}
-          
-          echo "BASEIMAGE_RELTAG=${BASEIMAGE_RELTAG}" >> $GITHUB_ENV
+          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" >> $PERSISTENCE_FILE
           echo "BASEIMAGE_URL=${BASEIMAGE_URL}" >> $GITHUB_ENV
           
-          echo "BASEIMAGE_RELTAG=${BASEIMAGE_RELTAG}" >> $GITHUB_STEP_SUMMARY
+          echo "Created base image with BASEIMAGE_URL=${BASEIMAGE_URL}" >> $GITHUB_STEP_SUMMARY
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -54,11 +51,6 @@ jobs:
         with:
           name: ${{ env.PERSISTENCE_FILE }}
           path: ${{ env.PERSISTENCE_FILE }}
-      
-      - name: Print into step_summary
-        run: |
-          echo "Pushed into ${IMG_REPO_URL}:${BASEIMAGE_RELTAG}" >> $GITHUB_STEP_SUMMARY
-          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" >> $GITHUB_STEP_SUMMARY
         
   build_slurm_build_image:
     name: Build slurm build docker image
@@ -82,21 +74,12 @@ jobs:
           SLURMIMAGE_RELTAG="slurmimg_${SLURM_RELTAG}"
           SLURMIMAGE_URL="${IMG_REPO_URL}:${SLURMIMAGE_RELTAG}"
 
-          # set job-wide env vars:
-          echo "SLURM_RELTAG=${SLURM_RELTAG}" >> $GITHUB_ENV
-          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" >> $GITHUB_ENV
-          echo "SLURMIMAGE_URL=${SLURMIMAGE_URL}" >> $GITHUB_ENV
-
-          # write into job summary
-          echo "SLURMIMAGE_RELTAG=${SLURMIMAGE_RELTAG}" >> $GITHUB_STEP_SUMMARY
-          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" >> $GITHUB_STEP_SUMMARY
-          echo "SLURMIMAGE_URL=${SLURMIMAGE_URL}" >> $GITHUB_STEP_SUMMARY
-          
-          # persistence file ops
           touch ${PERSISTENCE_FILE}
-          echo "SLURMIMAGE_RELTAG=${SLURMIMAGE_RELTAG}" >> ${PERSISTENCE_FILE}
-          echo "SLURM_RELTAG=${SLURM_RELTAG}" >> ${PERSISTENCE_FILE}
-          echo "SLURMIMAGE_URL=${SLURMIMAGE_URL}" >> ${PERSISTENCE_FILE}
+          
+          echo "SLURM_RELTAG=${SLURM_RELTAG}" | tee --append ${GITHUB_ENV} ${GITHUB_STEP_SUMMARY} ${PERSISTENCE_FILE}
+          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" | tee --append ${GITHUB_ENV} ${GITHUB_STEP_SUMMARY} ${PERSISTENCE_FILE}
+          echo "SLURMIMAGE_URL=${SLURMIMAGE_URL}" | tee --append ${GITHUB_ENV} ${GITHUB_STEP_SUMMARY} ${PERSISTENCE_FILE}
+          echo "SLURMIMAGE_RELTAG=${SLURMIMAGE_RELTAG}" | tee --append ${GITHUB_ENV} ${GITHUB_STEP_SUMMARY} ${PERSISTENCE_FILE}
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -145,21 +128,12 @@ jobs:
           PMIXIMAGE_RELTAG="pmiximg_${PMIX_RELTAG}"
           PMIXIMAGE_URL="${IMG_REPO_URL}:${PMIXIMAGE_RELTAG}"
 
-          # set job-wide env vars:
-          echo "PMIXIMAGE_RELTAG=${PMIXIMAGE_RELTAG}" >> $GITHUB_ENV
-          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" >> $GITHUB_ENV
-          echo "PMIXIMAGE_URL=${PMIXIMAGE_URL}" >> $GITHUB_ENV
-
-          # write into job summary
-          echo "PMIXIMAGE_RELTAG=${PMIXIMAGE_RELTAG}" >> $GITHUB_STEP_SUMMARY
-          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" >> $GITHUB_STEP_SUMMARY
-          echo "PMIXIMAGE_URL=${PMIXIMAGE_URL}" >> $GITHUB_STEP_SUMMARY
-          
-          # persistence file ops
           touch ${PERSISTENCE_FILE}
-          echo "PMIXIMAGE_RELTAG=${PMIXIMAGE_RELTAG}" >> ${PERSISTENCE_FILE}
-          echo "PMIX_RELTAG=${PMIX_RELTAG}" >> ${PERSISTENCE_FILE}
-          echo "PMIXIMAGE_URL=${PMIXIMAGE_URL}" >> ${PERSISTENCE_FILE}
+
+          echo "PMIXIMAGE_RELTAG=${PMIXIMAGE_RELTAG}" | tee --append $GITHUB_ENV $GITHUB_STEP_SUMMARY ${PERSISTENCE_FILE}
+          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" | tee --append $GITHUB_ENV $GITHUB_STEP_SUMMARY
+          echo "PMIX_RELTAG=${PMIX_RELTAG}" | tee --append $PERSISTENCE_FILE
+          echo "PMIXIMAGE_URL=${PMIXIMAGE_URL}" | tee --append $GITHUB_ENV $GITHUB_STEP_SUMMARY $PERSISTENCE_FILE
             
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
