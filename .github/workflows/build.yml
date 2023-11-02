@@ -35,8 +35,6 @@ jobs:
           PMIXIMAGE_RELTAG="pmiximg_${RELTAG}"
           PMIXIMAGE_URL="${IMG_REPO_URL}:${PMIXIMAGE_RELTAG}"
 
-          ${{ env.IMG_REPO_URL }}:${{ env.PMIXIMAGE_RELTAG }}
-
           touch $GLOBAL_VARS_FILE
 
           echo "RELTAG=${RELTAG}" | tee --append $GLOBAL_VARS_FILE $GITHUB_STEP_SUMMARY
