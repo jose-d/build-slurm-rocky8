@@ -325,15 +325,14 @@ jobs:
           name: slurm_build.log
 
 
-      - name: Read persistent data and add them into env
+      - name: Read persistent data and add them into env, tar all rpms
         shell: bash
         run: |
-          sudo apt -y install tree
-          tree .
-
           source ${GLOBAL_VARS_FILE}
-          
           echo "RELTAG=${RELTAG}" | tee --append $GITHUB_ENV
+
+          sudo apt -y install zstd
+          tar --use-compress-program zstd -cf rpm_tarball_${RELTAG}.tar.zst rpms/
 
       - name: Create tag
         id: tag_version
@@ -356,6 +355,7 @@ jobs:
             rpms/*.rpm
             slurm_build.log
             pmix_build.log
+            rpm_tarball_*.tar.zst
             
     
 
