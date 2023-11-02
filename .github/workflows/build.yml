@@ -325,18 +325,23 @@ jobs:
           
           echo "RELTAG=${RELTAG}" | tee --append $GITHUB_ENV
 
-      - name: Bump version and push tag
+      - name: Create tag
         id: tag_version
         uses: mathieudutour/github-tag-action@v6.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          custom_tag: ${{ env.RELTAG }}
         
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          body: Body text test
+          body: |
+            RPMs containing build of
+            * [Slurm ${{ env.SLURM_VERSION }}](https://slurm.schedmd.com/) built with NVML/Cuda ${{ env.NVML_VERSION }}
+            * [PMIx ${{ env.PMIX_VERSION }}](https://github.com/openpmix/openpmix)
+
           tag_name: ${{ steps.tag_version.outputs.new_tag }}
-          name: "slurm-${{ env.SLURM_VERSION }} with pmix-${{ env.PMIX_VERSION }}, reltag: ${{ env.RELTAG }}"
+          name: "slurm-${{ env.SLURM_VERSION }} + pmix-${{ env.PMIX_VERSION }}, (${{ env.RELTAG }})"
           files: |
             rpms/*.rpm
             slurm_build.log
