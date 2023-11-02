@@ -1,7 +1,5 @@
 ---
 
-# almost working docker version here: https://gist.github.com/jose-d/c69ea72ee8eea1d54fddb60da52c7bc1
-
 name: Build Slurm
 run-name: ${{ github.actor }} is attempting to build pmix and slurm 🚀
 on: workflow_dispatch
@@ -11,7 +9,7 @@ env:
   # version of openpmix and slurm to download and build together
   PMIX_VERSION: 4.2.7
   SLURM_VERSION: 23.02.6
-  CUDA_VERSION: '12-2'
+  NVML_VERSION: '12-2'
 
 jobs:
   build_base_build-image:
@@ -114,7 +112,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           build-args: |
-            CUDA_VERSION="12-2"
+            NVML_VERSION=${{ env.NVML_VERSION }}
             BASE_IMAGE=${{ env.BASEIMAGE_URL }}
           context: "{{defaultContext}}:.github/dockerfiles/slurm"
           push: true
