@@ -1,6 +1,17 @@
 # build-slurm-rocky8
 Build slurm rpms at Rocky8 with nvml support.
 
+## Automatic build using Github Actions
+
+* clone repository
+* review and edit [workflow file](actions/runs/6736829188/workflow), especially following vars need considering:
+  * IMG_REPO_URL .. ghcr repository used as a cache for docker images used as build environment
+  * PMIX_VERSION .. version of openPMIX used as build-dependency for Slurm
+  * NVML_VERSION .. version of CUDA from where take the NVML from
+  * SLURM_VERSION .. version of slurm to build
+
+## Manual way using Apptainer(formerly known as Singularity)
+
 credits:
 
 * https://github.com/c3se/containers/tree/master/rpm-builds (the whole concept)
