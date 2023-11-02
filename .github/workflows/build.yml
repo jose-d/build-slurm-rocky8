@@ -11,23 +11,67 @@ env:
   SLURM_VERSION: 23.02.6
   # version of CUDA to take NVML library from:
   NVML_VERSION: 12-2
+  # files used as cache for variables sharing
+  GLOBAL_VARS_FILE: global_vars.txt
 
 jobs:
+
+  prolog:
+    name: Create global release tag, and related job-specific naming constants and save it into BASE_BUILD_VARS_FILE
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create RELTAG and save it into GLOBAL_VARS_FILE and show it in $GITHUB_STEP_SUMMARY
+        shell: bash
+        run: |
+          # this is the date-based identifier for this release:
+          RELTAG="$(date +%Y%m%d%H%M%S)"
+
+          BASEIMAGE_RELTAG="baseimg_${RELTAG}"
+          BASEIMAGE_URL="${IMG_REPO_URL}:${BASEIMAGE_RELTAG}"
+
+          SLURMIMAGE_RELTAG="slurmimg_${RELTAG}"
+          SLURMIMAGE_URL="${IMG_REPO_URL}:${SLURMIMAGE_RELTAG}"
+
+          PMIXIMAGE_RELTAG="pmiximg_${RELTAG}"
+          PMIXIMAGE_URL="${IMG_REPO_URL}:${PMIXIMAGE_RELTAG}"
+
+          ${{ env.IMG_REPO_URL }}:${{ env.PMIXIMAGE_RELTAG }}
+
+          touch $GLOBAL_VARS_FILE
+
+          echo "RELTAG=${RELTAG}" | tee --append $GLOBAL_VARS_FILE $GITHUB_STEP_SUMMARY
+
+          echo "BASEIMAGE_RELTAG=${BASEIMAGE_RELTAG}" | tee --append $GLOBAL_VARS_FILE $GITHUB_STEP_SUMMARY
+          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" | tee --append $GLOBAL_VARS_FILE $GITHUB_STEP_SUMMARY
+
+          echo "SLURMIMAGE_RELTAG=${SLURMIMAGE_RELTAG}" | tee --append $GLOBAL_VARS_FILE $GITHUB_STEP_SUMMARY
+          echo "SLURMIMAGE_URL=${SLURMIMAGE_URL}" | tee --append $GLOBAL_VARS_FILE $GITHUB_STEP_SUMMARY
+
+
+      - name: Upload GLOBAL_VARS_FILE to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.GLOBAL_VARS_FILE }}
+          path: ${{ env.GLOBAL_VARS_FILE }}
+
   build_base_build-image:
     name: Build base docker image
     runs-on: ubuntu-latest
-    env:
-      PERSISTENCE_FILE: build_base_build-image_vars.txt
+    needs:
+      - prolog
     steps:
-      - name: Create BASEIMAGE_RELTAG and save it into file and github env
+
+      - name: Download GLOBAL_VARS_FILE
+        uses: actions/download-artifact@v3
+        with:
+          name: ${GLOBAL_VARS_FILE}
+
+      - name: Import required vars from GLOBAL_VARS_FILE into local env
         shell: bash
         run: |
-          BASEIMAGE_RELTAG="baseimg_$(date +%Y%m%d%H%M%S)"
-          BASEIMAGE_URL="${IMG_REPO_URL}:${BASEIMAGE_RELTAG}"
-          
-          touch $PERSISTENCE_FILE
-          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" | tee --append $PERSISTENCE_FILE $GITHUB_ENV $GITHUB_STEP_SUMMARY
-          
+          source ${GLOBAL_VARS_FILE}
+          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" | tee --append ${GITHUB_ENV}
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -44,41 +88,24 @@ jobs:
           context: "{{defaultContext}}:.github/dockerfiles/base"
           push: true
           tags: ${{ env.BASEIMAGE_URL }}
-         
-      - name: Upload persistent data form job as an artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ env.PERSISTENCE_FILE }}
-          path: ${{ env.PERSISTENCE_FILE }}
         
   build_slurm_build_image:
     name: Build slurm build docker image
     runs-on: ubuntu-latest
     needs: build_base_build-image
-    env:
-      PERSISTENCE_FILE: build_slurm_build_image_vars.txt
     steps:
 
-      - name: Download persistent data from build_base_build-image
+      - name: Download GLOBAL_VARS_FILE
         uses: actions/download-artifact@v3
         with:
-          name: build_base_build-image_vars.txt
+          name: ${GLOBAL_VARS_FILE}
 
-      - name: Read persistent data and add them into env, create SLURMIMAGE_RELTAG and save persistent data
+      - name: Import required vars from GLOBAL_VARS_FILE into local env
         shell: bash
         run: |
-          source build_base_build-image_vars.txt
-          
-          SLURM_RELTAG="$(date +%Y%m%d%H%M%S)"
-          SLURMIMAGE_RELTAG="slurmimg_${SLURM_RELTAG}"
-          SLURMIMAGE_URL="${IMG_REPO_URL}:${SLURMIMAGE_RELTAG}"
-
-          touch ${PERSISTENCE_FILE}
-          
-          echo "SLURM_RELTAG=${SLURM_RELTAG}" | tee --append ${GITHUB_ENV} ${GITHUB_STEP_SUMMARY} ${PERSISTENCE_FILE}
-          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" | tee --append ${GITHUB_ENV} ${GITHUB_STEP_SUMMARY} ${PERSISTENCE_FILE}
-          echo "SLURMIMAGE_URL=${SLURMIMAGE_URL}" | tee --append ${GITHUB_ENV} ${GITHUB_STEP_SUMMARY} ${PERSISTENCE_FILE}
-          echo "SLURMIMAGE_RELTAG=${SLURMIMAGE_RELTAG}" | tee --append ${GITHUB_ENV} ${GITHUB_STEP_SUMMARY} ${PERSISTENCE_FILE}
+          source ${GLOBAL_VARS_FILE}
+          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" | tee --append ${GITHUB_ENV}
+          echo "SLURMIMAGE_URL=${SLURMIMAGE_URL}" | tee --append ${GITHUB_ENV}
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -100,39 +127,23 @@ jobs:
           push: true
           tags: ${{ env.SLURMIMAGE_URL }}
 
-      - name: Upload persistent data form job as an artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ env.PERSISTENCE_FILE }}
-          path: ${{ env.PERSISTENCE_FILE }}
-
   build_pmix_build_image:
     name: Build pmix build docker image
     runs-on: ubuntu-latest
     needs: build_base_build-image
-    env:
-      PERSISTENCE_FILE: build_pmix_build_image_vars.txt
     steps:
-      - name: Download persistent data from build_base_build-image
+
+      - name: Download GLOBAL_VARS_FILE
         uses: actions/download-artifact@v3
         with:
-          name: build_base_build-image_vars.txt
+          name: ${GLOBAL_VARS_FILE}
 
-      - name: Read persistent data and add them into env, create PMIXIMAGE_RELTAG and save persistent data
+      - name: Import required vars from GLOBAL_VARS_FILE into local env
         shell: bash
         run: |
-          source build_base_build-image_vars.txt
-          
-          PMIX_RELTAG="$(date +%Y%m%d%H%M%S)"
-          PMIXIMAGE_RELTAG="pmiximg_${PMIX_RELTAG}"
-          PMIXIMAGE_URL="${IMG_REPO_URL}:${PMIXIMAGE_RELTAG}"
-
-          touch ${PERSISTENCE_FILE}
-
-          echo "PMIXIMAGE_RELTAG=${PMIXIMAGE_RELTAG}" | tee --append $GITHUB_ENV $GITHUB_STEP_SUMMARY ${PERSISTENCE_FILE}
-          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" | tee --append $GITHUB_ENV $GITHUB_STEP_SUMMARY
-          echo "PMIX_RELTAG=${PMIX_RELTAG}" | tee --append $PERSISTENCE_FILE
-          echo "PMIXIMAGE_URL=${PMIXIMAGE_URL}" | tee --append $GITHUB_ENV $GITHUB_STEP_SUMMARY $PERSISTENCE_FILE
+          source ${GLOBAL_VARS_FILE}
+          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" | tee --append ${GITHUB_ENV}
+          echo "PMIXIMAGE_URL=${PMIXIMAGE_URL}" | tee --append ${GITHUB_ENV}
             
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -151,28 +162,20 @@ jobs:
             BASE_IMAGE=${{ env.BASEIMAGE_URL }}
           context: "{{defaultContext}}:.github/dockerfiles/pmix"
           push: true
-          tags: ${{ env.IMG_REPO_URL }}:${{ env.PMIXIMAGE_RELTAG }}
-
-      - name: Upload persistent data form job as an artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ env.PERSISTENCE_FILE }}
-          path: ${{ env.PERSISTENCE_FILE }}
+          tags: ${{ env.PMIXIMAGE_URL }}
 
   build_pmix:
     name: Build pmix
     runs-on: ubuntu-latest
     needs: build_pmix_build_image
     env:
-      PERSISTENCE_FILE_PMIX: build_pmix_build_image_vars.txt
-      PERSISTENCE_FILE: build_pmix_vars.txt
       GHCR_U: ${{ github.actor }}
       GHCR_S: ${{ secrets.PACKAGES_SECRET }}
     steps:
-      - name: Download persistent data from build_pmix_build_image
+      - name: Download GLOBAL_VARS_FILE
         uses: actions/download-artifact@v3
         with:
-          name: ${{ env.PERSISTENCE_FILE_PMIX }}  
+          name: ${GLOBAL_VARS_FILE}
 
       - name: checkout pmix build script
         uses: actions/checkout@v4
@@ -183,10 +186,10 @@ jobs:
           
       - name: Login to ghcr registry with docker and do build
         run: |
-          source ${PERSISTENCE_FILE_PMIX}
+          source ${GLOBAL_VARS_FILE}
           echo $GHCR_S | docker login ghcr.io -u ${GHCR_U} --password-stdin
           docker run --cidfile /tmp/docker_test.cid \
-                     --env-file $PERSISTENCE_FILE_PMIX \
+                     --env-file $GLOBAL_VARS_FILE \
                      --env GITHUB_WORKSPACE=${GITHUB_WORKSPACE} \
                      --env PMIX_VERSION=${PMIX_VERSION} \
                      -v ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} \
@@ -207,23 +210,14 @@ jobs:
       - build_pmix
       - build_slurm_build_image
     env:
-      PERSISTENCE_FILE_PMIX: build_pmix_build_image_vars.txt
-      PERSISTENCE_FILE_SLURM: build_slurm_build_image_vars.txt
-      PERSISTENCE_FILE: build_slurm_vars.txt
       GHCR_U: ${{ github.actor }}
       GHCR_S: ${{ secrets.PACKAGES_SECRET }}
-    steps:
-      # download data from previous jobs:
-      
-      - name: Download persistent data from PERSISTENCE_FILE_PMIX
-        uses: actions/download-artifact@v3
-        with:
-          name: ${{ env.PERSISTENCE_FILE_PMIX }}
 
-      - name: Download persistent data from PERSISTENCE_FILE_SLURM
+    steps:
+      - name: Download GLOBAL_VARS_FILE
         uses: actions/download-artifact@v3
         with:
-          name: ${{ env.PERSISTENCE_FILE_SLURM }}
+          name: ${GLOBAL_VARS_FILE}
 
       - name: Download pmix rpms
         uses: actions/download-artifact@v3
@@ -241,7 +235,7 @@ jobs:
       - name: Download slurm tarball, unpack, patch spec file
         shell: bash
         run: |
-           source $PERSISTENCE_FILE_SLURM
+           source $GLOBAL_VARS_FILE
            wget --quiet https://download.schedmd.com/slurm/slurm-${SLURM_VERSION}.tar.bz2
            tar -xf ./slurm*
            #cp slurm-*.tar.bz2 $HOME/rpmbuild/SOURCES/
@@ -252,10 +246,10 @@ jobs:
         shell: bash
         run: |
             set -x
-            source $PERSISTENCE_FILE_SLURM
+            source $GLOBAL_VARS_FILE
             echo $GHCR_S | docker login ghcr.io -u ${GHCR_U} --password-stdin
             docker run --cidfile /tmp/docker_test.cid \
-                     --env-file $PERSISTENCE_FILE_SLURM \
+                     --env-file $GLOBAL_VARS_FILE \
                      --env GITHUB_WORKSPACE=${GITHUB_WORKSPACE} \
                      -v ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} \
                      -v ${HOME}:${HOME} \
@@ -268,24 +262,9 @@ jobs:
           path: |
             ${{ github.workspace }}/rpms/*.rpm
 
-      - name: Print build resume
-        shell: bash
-        run: |
-          source $PERSISTENCE_FILE_SLURM
-          echo "### Slurm" | tee --append $GITHUB_STEP_SUMMARY 
-          echo "* version: $SLURM_VERSION" | tee --append $GITHUB_STEP_SUMMARY
-          echo "* release: $SLURM_RELTAG" | tee --append $GITHUB_STEP_SUMMARY
-          echo "* built with NVML version: $NVML_VERSION" | tee --append $GITHUB_STEP_SUMMARY
-          echo "### PMI-X" | tee --append $GITHUB_STEP_SUMMARY
-          echo "* version: $PMIX_VERSION" | tee --append $GITHUB_STEP_SUMMARY
-          echo "* release: $PMIX_RELTAG" | tee --append $GITHUB_STEP_SUMMARY
-
   publish_files:
-    name: Publish build files in release
+    name: Publish built files in release
     runs-on: ubuntu-latest
-    env:
-      PERSISTENCE_FILE_PMIX: build_pmix_build_image_vars.txt
-      PERSISTENCE_FILE_SLURM: build_slurm_build_image_vars.txt
     needs:
       - build_slurm
       - build_pmix
@@ -300,11 +279,12 @@ jobs:
       - name: Read persistent data and add them into env
         shell: bash
         run: |
-          source ${PERSISTENCE_FILE_PMIX}
-          source ${PERSISTENCE_FILE_SLURM}
+          sudo apt -y install tree
+          tree .
+
+          source ${GLOBAL_VARS_FILE}
           
-          echo "SLURM_VERSION=${SLURM_VERSION}" | tee --append $GITHUB_ENV
-          echo "PMIX_VERSION=$PMIX_VERSION" | tee --append $GITHUB_ENV
+          echo "RELTAG=${RELTAG}" | tee --append $GITHUB_ENV
 
       - name: Bump version and push tag
         id: tag_version
@@ -316,7 +296,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           body: Body text test
-          name: slurm-${{ env.SLURM_VERSION }} with pmix-${{ env.PMIX_VERSION }}
+          name: "slurm-${{ env.SLURM_VERSION }} with pmix-${{ env.PMIX_VERSION }}, reltag: ${{ env.RELTAG }}"
           files: |
             *.rpm
             
