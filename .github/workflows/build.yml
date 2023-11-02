@@ -65,7 +65,7 @@ jobs:
       - name: Download GLOBAL_VARS_FILE
         uses: actions/download-artifact@v3
         with:
-          name: ${GLOBAL_VARS_FILE}
+          name: ${{ env.GLOBAL_VARS_FILE }}
 
       - name: Import required vars from GLOBAL_VARS_FILE into local env
         shell: bash
@@ -99,7 +99,7 @@ jobs:
       - name: Download GLOBAL_VARS_FILE
         uses: actions/download-artifact@v3
         with:
-          name: ${GLOBAL_VARS_FILE}
+          name: ${{ env.GLOBAL_VARS_FILE }}
 
       - name: Import required vars from GLOBAL_VARS_FILE into local env
         shell: bash
@@ -137,7 +137,7 @@ jobs:
       - name: Download GLOBAL_VARS_FILE
         uses: actions/download-artifact@v3
         with:
-          name: ${GLOBAL_VARS_FILE}
+          name: ${{ env.GLOBAL_VARS_FILE }}
 
       - name: Import required vars from GLOBAL_VARS_FILE into local env
         shell: bash
@@ -176,7 +176,7 @@ jobs:
       - name: Download GLOBAL_VARS_FILE
         uses: actions/download-artifact@v3
         with:
-          name: ${GLOBAL_VARS_FILE}
+          name: ${{ env.GLOBAL_VARS_FILE }}
 
       - name: checkout pmix build script
         uses: actions/checkout@v4
@@ -218,7 +218,7 @@ jobs:
       - name: Download GLOBAL_VARS_FILE
         uses: actions/download-artifact@v3
         with:
-          name: ${GLOBAL_VARS_FILE}
+          name: ${{ env.GLOBAL_VARS_FILE }}
 
       - name: Download pmix rpms
         uses: actions/download-artifact@v3
