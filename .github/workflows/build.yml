@@ -276,7 +276,7 @@ jobs:
           echo "### Slurm" | tee --append $GITHUB_STEP_SUMMARY 
           echo "* version: $SLURM_VERSION" | tee --append $GITHUB_STEP_SUMMARY
           echo "* release: $SLURM_RELTAG" | tee --append $GITHUB_STEP_SUMMARY
-          echo "* built with NVML version: $NVML_VERSION | tee --append $GITHUB_STEP_SUMMARY
+          echo "* built with NVML version: $NVML_VERSION" | tee --append $GITHUB_STEP_SUMMARY
           echo "### PMI-X" | tee --append $GITHUB_STEP_SUMMARY
           echo "* version: $PMIX_VERSION" | tee --append $GITHUB_STEP_SUMMARY
           echo "* release: $PMIX_RELTAG" | tee --append $GITHUB_STEP_SUMMARY
