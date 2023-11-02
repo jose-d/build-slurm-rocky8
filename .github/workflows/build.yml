@@ -330,7 +330,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           body: Body text test
-          name: slurm-${{ env.SLURM_VERSION }} with pmix-${{ PMIX_VERSION }}
+          name: slurm-${{ env.SLURM_VERSION }} with pmix-${{ env.PMIX_VERSION }}
           files: |
             pmix_rpms/*.rpm
             slurm_rpms/*.rpm
