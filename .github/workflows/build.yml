@@ -273,6 +273,7 @@ jobs:
       - name: Print build resume
         shell: bash
         run: |
+          source $PERSISTENCE_FILE_SLURM
           echo "### Slurm" | tee --append $GITHUB_STEP_SUMMARY 
           echo "* version: $SLURM_VERSION" | tee --append $GITHUB_STEP_SUMMARY
           echo "* release: $SLURM_RELTAG" | tee --append $GITHUB_STEP_SUMMARY
