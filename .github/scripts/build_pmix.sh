@@ -1,18 +1,22 @@
 #!/bin/bash
-        
+
+# print input vars
 echo "PMIX_RELTAG: ${PMIX_RELTAG}, PMIX_VERSION: ${PMIX_VERSION}"
 
-mkdir -p "${HOME}/rpmbuild/SOURCES/"
-wget "https://github.com/openpmix/openpmix/releases/download/v${PMIX_VERSION}/pmix-${PMIX_VERSION}.tar.bz2"
-tar -xf ./pmix*
-cp pmix-*.tar.bz2 ${HOME}/rpmbuild/SOURCES/
-sed -i "s/^Release.*$/Release: ${PMIX_RELTAG}%{?dist}/g" pmix-*/contrib/pmix.spec
-
-cat pmix-*/contrib/pmix.spec
-
+# enable shell debug
 set -x
-rpmbuild --define 'build_all_in_one_rpm 0' --define 'configure_options --disable-per-user-config-files' -ba ./pmix-*/contrib/pmix.spec
+
+# install deps
+# N/A
+
+# mkdir for rpmbuild and copy tarball there
+mkdir -p "${HOME}/rpmbuild/SOURCES/"
+cp  ${GITHUB_WORKSPACE}/pmix-*.tar.bz2 ${HOME}/rpmbuild/SOURCES/
+
+# do rpmbuild
+rpmbuild --define 'build_all_in_one_rpm 0' \
+         --define 'configure_options --disable-per-user-config-files' \
+         -ba ./pmix-*/contrib/pmix.spec
+
 mkdir "${GITHUB_WORKSPACE}/rpms"
 cp ${HOME}/rpmbuild/RPMS/x86_64/*.rpm ${GITHUB_WORKSPACE}/rpms/
-
-set -x

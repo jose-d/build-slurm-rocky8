@@ -17,10 +17,10 @@ env:
 jobs:
 
   prolog:
-    name: Create global release tag, and related job-specific naming constants and save it into BASE_BUILD_VARS_FILE
+    name: Create global release tag, and related job-specific naming constants and save it into GLOBAL_VARS_FILE
     runs-on: ubuntu-latest
     steps:
-      - name: Create RELTAG and save it into GLOBAL_VARS_FILE and show it in $GITHUB_STEP_SUMMARY
+      - name: Create vars, save them into GLOBAL_VARS_FILE and GITHUB_STEP_SUMMARY
         shell: bash
         run: |
           # this is the date-based identifier for this release:
@@ -184,6 +184,14 @@ jobs:
           sparse-checkout: .github/scripts/build_pmix.sh
           sparse-checkout-cone-mode: false
           path: scripts
+
+      - name: Download pmix tarball, unpack, patch spec file
+        shell: bash
+        run: |
+            source $GLOBAL_VARS_FILE
+            wget "https://github.com/openpmix/openpmix/releases/download/v${PMIX_VERSION}/pmix-${PMIX_VERSION}.tar.bz2"
+            tar -xf ./pmix*
+            sed -i "s/^Release.*$/Release: ${RELTAG}%{?dist}/g" pmix-*/contrib/pmix.spec
           
       - name: Login to ghcr registry with docker and do build
         run: |
@@ -201,6 +209,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: pmix_rpms
+          if-no-files-found: error
           path: |
             ${{ github.workspace }}/rpms/*.rpm
 
@@ -226,7 +235,7 @@ jobs:
           name: pmix_rpms
           path: pmix_rpms
 
-      - name: checkout slurm build script
+      - name: Checkout slurm build script
         uses: actions/checkout@v4
         with:
           sparse-checkout: .github/scripts/build_slurm.sh
@@ -239,8 +248,7 @@ jobs:
            source $GLOBAL_VARS_FILE
            wget --quiet https://download.schedmd.com/slurm/slurm-${SLURM_VERSION}.tar.bz2
            tar -xf ./slurm*
-           #cp slurm-*.tar.bz2 $HOME/rpmbuild/SOURCES/
-           sed -i "s/^%define rel.*$/%define rel     ${SLURM_RELTAG}/g" slurm*/slurm.spec
+           sed -i "s/^%define rel.*$/%define rel     ${RELTAG}/g" slurm*/slurm.spec
            sed -i "s/^%global slurm_source_dir.*$/%global slurm_source_dir %{name}-%{version}/g" ./slurm*/slurm.spec
 
       - name: Login to ghcr registry with docker and do build
@@ -260,6 +268,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: slurm_rpms
+          if-no-files-found: error
           path: |
             ${{ github.workspace }}/rpms/*.rpm
 
@@ -274,8 +283,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Download all artifacts
+      - name: Download GLOBAL_VARS_FILE
         uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.GLOBAL_VARS_FILE }}
+
+      - name: Download pmix rpms
+        uses: actions/download-artifact@v3
+        with:
+          name: pmix_rpms
+          path: rpms
+
+      - name: Download pmix rpms
+        uses: actions/download-artifact@v3
+        with:
+          name: slurm_rpms
+          path: rpms
+
 
       - name: Read persistent data and add them into env
         shell: bash
@@ -298,8 +322,7 @@ jobs:
         with:
           body: Body text test
           name: "slurm-${{ env.SLURM_VERSION }} with pmix-${{ env.PMIX_VERSION }}, reltag: ${{ env.RELTAG }}"
-          files: |
-            *.rpm
+          files: rpms/*.rpm
             
     
 

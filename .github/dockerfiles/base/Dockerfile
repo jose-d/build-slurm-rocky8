@@ -1,7 +1,7 @@
 FROM rockylinux:8
 
-RUN dnf update -y
-RUN dnf install -y dnf-plugins-core
-RUN dnf config-manager --set-enabled powertools
-RUN dnf install -y rpm-build automake autoconf libtool make pkg-config less vim flex bison doxygen cmake bash-doc which wget
-RUN dnf clean all
+RUN dnf update -y && \
+    dnf install -y dnf-plugins-core && \
+    dnf config-manager --set-enabled powertools && \
+    dnf install -y rpm-build automake autoconf libtool make pkg-config less vim flex bison doxygen cmake bash-doc which wget && \
+    dnf clean all
