@@ -330,15 +330,14 @@ jobs:
         with:
           name: slurm_build.log
 
-
-      - name: Read persistent data and add them into env, tar all rpms
+      - name: Read persistent data and add them into env, create tarball from all rpms
         shell: bash
         run: |
           source ${GLOBAL_VARS_FILE}
           echo "RELTAG=${RELTAG}" | tee --append $GITHUB_ENV
 
           sudo apt -y install zstd
-          tar --use-compress-program zstd -cf rpm_tarball_${RELTAG}.tar.zst rpms/
+          tar -cf rpm_tarball_${RELTAG}.tar.gz rpms/
 
       - name: Create tag
         id: tag_version
@@ -346,7 +345,8 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
         
-      - name: Release
+      - name: Create release and add assets
+        id: create_release
         uses: softprops/action-gh-release@v1
         with:
           body: |
@@ -356,11 +356,12 @@ jobs:
 
           tag_name: ${{ steps.tag_version.outputs.new_tag }}
           name: "slurm-${{ env.SLURM_VERSION }} + pmix-${{ env.PMIX_VERSION }}, (${{ env.RELTAG }})"
+          fail_on_unmatched_files: true
           files: |
             rpms/*.rpm
             slurm_build.log
             pmix_build.log
-            rpm_tarball_*.tar.zst
+            rpm_tarball_*.tar.gz
             
     
 
