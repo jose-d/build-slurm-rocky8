@@ -13,6 +13,9 @@ set -x
 mkdir -p "${HOME}/rpmbuild/SOURCES/"
 cp  ${GITHUB_WORKSPACE}/pmix-*.tar.bz2 ${HOME}/rpmbuild/SOURCES/
 
+# dump rpmlist for possible forensic
+rpm -qa | sort > "${GITHUB_WORKSPACE}/image_pmix_rpms.txt"
+
 # do rpmbuild
 rpmbuild --define 'build_all_in_one_rpm 0' \
          --define 'configure_options --disable-per-user-config-files' \
