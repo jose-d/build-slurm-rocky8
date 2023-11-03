@@ -13,6 +13,9 @@ dnf -y install ${GITHUB_WORKSPACE}/pmix_rpms/*.rpm
 mkdir -p "${HOME}/rpmbuild/SOURCES/"
 cp ${GITHUB_WORKSPACE}/slurm-*.tar.bz2 $HOME/rpmbuild/SOURCES/
 
+# dump rpmlist for possible forensic
+rpm -qa | sort > "${GITHUB_WORKSPACE}/image_slurm_rpms.txt"
+
 # do rpmbuild
 rpmbuild --define '_with_nvml --with-nvml=/usr/local/cuda/targets/x86_64-linux/' \
           --with pam \
