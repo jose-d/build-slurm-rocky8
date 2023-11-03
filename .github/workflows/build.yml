@@ -218,13 +218,19 @@ jobs:
           if-no-files-found: error
           path: ${{ github.workspace }}/pmix_build.log
 
+      - name: Upload image_pmix_rpms.txt as artifact 
+        uses: actions/upload-artifact@v3
+        with:
+          name: image_pmix_rpms.txt
+          if-no-files-found: error
+          path: ${{ github.workspace }}/image_pmix_rpms.txt
+
       - name: Upload pmix rpms as artifacts
         uses: actions/upload-artifact@v3
         with:
           name: pmix_rpms
           if-no-files-found: error
-          path: |
-            ${{ github.workspace }}/rpms/*.rpm
+          path: ${{ github.workspace }}/rpms/*.rpm
 
   build_slurm:
     name: Build slurm
@@ -284,13 +290,19 @@ jobs:
           if-no-files-found: error
           path: ${{ github.workspace }}/slurm_build.log
 
+      - name: Upload image_slurm_rpms.txt as artifact 
+        uses: actions/upload-artifact@v3
+        with:
+          name: image_slurm_rpms.txt
+          if-no-files-found: error
+          path: ${{ github.workspace }}/image_slurm_rpms.txt
+            
       - name: Upload slurm rpms as artifacts
         uses: actions/upload-artifact@v3
         with:
           name: slurm_rpms
           if-no-files-found: error
-          path: |
-            ${{ github.workspace }}/rpms/*.rpm
+          path: ${{ github.workspace }}/rpms/*.rpm
 
   publish_files:
     name: Publish built files in release
