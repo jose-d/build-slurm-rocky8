@@ -342,6 +342,16 @@ jobs:
         with:
           name: slurm_build.log
 
+      - name: Download slurm_build.log
+        uses: actions/download-artifact@v3
+        with:
+          name: image_pmix_rpms.txt
+
+      - name: Download slurm_build.log
+        uses: actions/download-artifact@v3
+        with:
+          name: image_slurm_rpms.txt
+
       - name: Read persistent data and add them into env, create tarball from all rpms
         shell: bash
         run: |
@@ -374,6 +384,7 @@ jobs:
             slurm_build.log
             pmix_build.log
             rpm_tarball_*.tar.gz
+            image_*_rpms.txt
             
     
 
