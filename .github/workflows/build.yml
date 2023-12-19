@@ -7,7 +7,7 @@ env:
   # github image repository url - used to cache docker images
   IMG_REPO_URL: ghcr.io/jose-d/build-slurm-rocky8
   # version of openpmix and slurm to download and build together
-  PMIX_VERSION: 4.2.7
+  PMIX_VERSION: 4.2.8
   SLURM_VERSION: 23.02.7
   # version of CUDA to take NVML library from:
   NVML_VERSION: 12-3
