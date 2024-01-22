@@ -1,6 +1,9 @@
 # build-slurm-rocky8
 Build pmi-x and slurm rpms for Rocky8 with nvml support.
 
+* changelog of upstream slurm project: https://github.com/SchedMD/slurm/blob/master/NEWS
+* releases of openpmix upstream: https://github.com/openpmix/openpmix/releases
+
 ## Automatic build using Github Actions
 
 * clone repository
