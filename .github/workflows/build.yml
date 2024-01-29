@@ -51,7 +51,7 @@ jobs:
 
 
       - name: Upload GLOBAL_VARS_FILE to artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.GLOBAL_VARS_FILE }}
           path: ${{ env.GLOBAL_VARS_FILE }}
@@ -213,21 +213,21 @@ jobs:
                      -w ${GITHUB_WORKSPACE} ${PMIXIMAGE_URL} /bin/bash scripts/.github/scripts/build_pmix.sh
 
       - name: Upload build log as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: pmix_build.log
           if-no-files-found: error
           path: ${{ github.workspace }}/pmix_build.log
 
       - name: Upload image_pmix_rpms.txt as artifact 
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: image_pmix_rpms.txt
           if-no-files-found: error
           path: ${{ github.workspace }}/image_pmix_rpms.txt
 
       - name: Upload pmix rpms as artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: pmix_rpms
           if-no-files-found: error
@@ -285,21 +285,21 @@ jobs:
                      -w ${GITHUB_WORKSPACE} ${SLURMIMAGE_URL} /bin/bash scripts/.github/scripts/build_slurm.sh
 
       - name: Upload build log as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: slurm_build.log
           if-no-files-found: error
           path: ${{ github.workspace }}/slurm_build.log
 
       - name: Upload image_slurm_rpms.txt as artifact 
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: image_slurm_rpms.txt
           if-no-files-found: error
           path: ${{ github.workspace }}/image_slurm_rpms.txt
             
       - name: Upload slurm rpms as artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: slurm_rpms
           if-no-files-found: error
