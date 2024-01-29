@@ -3,6 +3,8 @@
 name: Build Slurm
 run-name: ${{ github.actor }} is attempting to build pmix and slurm 🚀
 on: workflow_dispatch
+permissions:
+  contents: write
 env:
   # github image repository url - used to cache docker images
   IMG_REPO_URL: ghcr.io/jose-d/build-slurm-rocky8
@@ -13,10 +15,6 @@ env:
   NVML_VERSION: 12-3
   # files used as cache for variables sharing
   GLOBAL_VARS_FILE: global_vars.txt
-
-permissions:
-  contents: write
-
 jobs:
 
   prolog:
