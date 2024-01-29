@@ -63,7 +63,7 @@ jobs:
     steps:
 
       - name: Download GLOBAL_VARS_FILE
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ env.GLOBAL_VARS_FILE }}
 
@@ -99,7 +99,7 @@ jobs:
     steps:
 
       - name: Download GLOBAL_VARS_FILE
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ env.GLOBAL_VARS_FILE }}
 
@@ -139,7 +139,7 @@ jobs:
     steps:
 
       - name: Download GLOBAL_VARS_FILE
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ env.GLOBAL_VARS_FILE }}
 
@@ -180,7 +180,7 @@ jobs:
       GHCR_S: ${{ secrets.PACKAGES_SECRET }}
     steps:
       - name: Download GLOBAL_VARS_FILE
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ env.GLOBAL_VARS_FILE }}
 
@@ -244,12 +244,12 @@ jobs:
 
     steps:
       - name: Download GLOBAL_VARS_FILE
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ env.GLOBAL_VARS_FILE }}
 
       - name: Download pmix rpms
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: pmix_rpms
           path: pmix_rpms
@@ -316,39 +316,39 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Download GLOBAL_VARS_FILE
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ env.GLOBAL_VARS_FILE }}
 
       - name: Download pmix rpms
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: pmix_rpms
           path: rpms
 
       - name: Download pmix rpms
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: slurm_rpms
           path: rpms
 
       - name: Download pmix_build.log
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: pmix_build.log
 
       - name: Download slurm_build.log
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: slurm_build.log
 
       - name: Download slurm_build.log
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: image_pmix_rpms.txt
 
       - name: Download slurm_build.log
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: image_slurm_rpms.txt
 
