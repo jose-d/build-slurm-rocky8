@@ -14,6 +14,9 @@ env:
   # files used as cache for variables sharing
   GLOBAL_VARS_FILE: global_vars.txt
 
+permissions:
+  contents: write
+
 jobs:
 
   prolog:
