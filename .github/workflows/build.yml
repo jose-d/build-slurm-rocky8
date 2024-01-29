@@ -4,7 +4,20 @@ name: Build Slurm
 run-name: ${{ github.actor }} is attempting to build pmix and slurm 🚀
 on: workflow_dispatch
 permissions:
+  actions: read
+  checks: none
   contents: write
+  deployments: none
+  id-token: none
+  issues: none
+  discussions: none
+  packages: write
+  pages: none
+  pull-requests: none
+  repository-projects: read
+  security-events: none
+  statuses: none
+
 env:
   # github image repository url - used to cache docker images
   IMG_REPO_URL: ghcr.io/jose-d/build-slurm-rocky8
