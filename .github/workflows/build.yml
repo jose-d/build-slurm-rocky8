@@ -135,7 +135,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
         
       - name: Build and push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v5.1.0
         with:
           build-args: |
             NVML_VERSION=${{ env.NVML_VERSION }}
@@ -175,7 +175,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
         
       - name: Build and push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v5.1.0
         with:
           build-args: |
             BASE_IMAGE=${{ env.BASEIMAGE_URL }}
