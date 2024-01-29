@@ -85,13 +85,13 @@ jobs:
         uses: docker/setup-buildx-action@v3
           
       - name: Build and push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v5.1
         with:
           context: "{{defaultContext}}:.github/dockerfiles/base"
           push: true
           tags: ${{ env.BASEIMAGE_URL }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+#          cache-from: type=gha
+#          cache-to: type=gha,mode=max
         
   build_slurm_build_image:
     name: Build slurm build docker image
