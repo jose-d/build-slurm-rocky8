@@ -11,8 +11,9 @@ RUN dnf upgrade -y && \
     dnf install -y createrepo_c gtk2-devel && \
     dnf clean all
 
+# we go with precompiled nvidia-driver to save time..
 RUN dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo && \
-    dnf -y module disable nvidia-driver && \
+    dnf module install nvidia-driver:560 && \
     dnf clean all && \
     dnf -y install --nobest cuda-nvml-devel-$NVML_VERSION cuda-$NVML_VERSION && \
     dnf clean all
