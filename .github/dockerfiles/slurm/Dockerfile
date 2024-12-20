@@ -12,6 +12,7 @@ RUN dnf upgrade -y && \
     dnf clean all
 
 RUN dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo && \
+    dnf module disable nvidia-driver && \
     dnf clean all && \
     dnf -y install --nobest cuda-nvml-devel-$NVML_VERSION cuda-$NVML_VERSION && \
     dnf clean all
