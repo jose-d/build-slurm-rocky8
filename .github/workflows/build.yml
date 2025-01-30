@@ -9,7 +9,7 @@ env:
   IMG_REPO_URL: ghcr.io/jose-d/build-slurm-rocky8
   # version of openpmix and slurm to download and build together
   PMIX_VERSION: 5.0.6
-  SLURM_VERSION: 24.11.0
+  SLURM_VERSION: 24.11.1
   # version of CUDA to take NVML library from:
   NVML_VERSION: 12-6
   # files used as cache for variables sharing
