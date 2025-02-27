@@ -33,7 +33,7 @@ jobs:
           SLURMIMAGE_URL="${IMG_REPO_URL}:${SLURMIMAGE_RELTAG}"
 
           PMIXIMAGE_RELTAG="pmiximg_${RELTAG}"
-          PMIXIMAGE_URL="${IMG_REPO_URL}:${PMIXIMAGE_RELTAG}"
+          PMIXIMAGE_URL="ghcr.io/jose-d/docker-images-rocky8:pmiximg_20250227142952"
 
           touch $GLOBAL_VARS_FILE
 
