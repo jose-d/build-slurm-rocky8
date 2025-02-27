@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# fail if anything wrong
+set -e
+
 # print input vars
 echo "PMIX_RELTAG: ${SLURM_RELTAG}, PMIX_VERSION: ${SLURM_VERSION}"
 
@@ -25,7 +28,6 @@ rpmbuild --define '_with_nvml --with-nvml=/usr/local/cuda/targets/x86_64-linux/'
           --with mysql \
           --with numa \
           --with pmix \
-          --with-slurmd-port=6918 \
           -ba ./slurm-*/slurm.spec &> ${GITHUB_WORKSPACE}/slurm_build.log
 
 mkdir "${GITHUB_WORKSPACE}/rpms"
