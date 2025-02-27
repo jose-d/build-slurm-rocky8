@@ -25,27 +25,13 @@ jobs:
         run: |
           # this is the date-based identifier for this release:
           RELTAG="$(date +%Y%m%d%H%M%S)"
-
-          BASEIMAGE_RELTAG="baseimg_${RELTAG}"
-          BASEIMAGE_URL="${IMG_REPO_URL}:${BASEIMAGE_RELTAG}"
-
-          SLURMIMAGE_RELTAG="slurmimg_${RELTAG}"
           SLURMIMAGE_URL="${IMG_REPO_URL}:${SLURMIMAGE_RELTAG}"
-
-          PMIXIMAGE_RELTAG="pmiximg_${RELTAG}"
           PMIXIMAGE_URL="ghcr.io/jose-d/docker-images-rocky8:pmiximg_20250227142952"
 
           touch $GLOBAL_VARS_FILE
 
           echo "RELTAG=${RELTAG}" | tee --append $GLOBAL_VARS_FILE $GITHUB_STEP_SUMMARY
-
-          echo "BASEIMAGE_RELTAG=${BASEIMAGE_RELTAG}" | tee --append $GLOBAL_VARS_FILE $GITHUB_STEP_SUMMARY
-          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" | tee --append $GLOBAL_VARS_FILE $GITHUB_STEP_SUMMARY
-
-          echo "PMIXIMAGE_RELTAG=${PMIXIMAGE_RELTAG}" | tee --append $GLOBAL_VARS_FILE $GITHUB_STEP_SUMMARY
           echo "PMIXIMAGE_URL=${PMIXIMAGE_URL}" | tee --append $GLOBAL_VARS_FILE $GITHUB_STEP_SUMMARY
-
-          echo "SLURMIMAGE_RELTAG=${SLURMIMAGE_RELTAG}" | tee --append $GLOBAL_VARS_FILE $GITHUB_STEP_SUMMARY
           echo "SLURMIMAGE_URL=${SLURMIMAGE_URL}" | tee --append $GLOBAL_VARS_FILE $GITHUB_STEP_SUMMARY
 
 
@@ -54,122 +40,6 @@ jobs:
         with:
           name: ${{ env.GLOBAL_VARS_FILE }}
           path: ${{ env.GLOBAL_VARS_FILE }}
-
-  build_base_build-image:
-    name: Build base docker image
-    runs-on: ubuntu-latest
-    needs:
-      - prolog
-    steps:
-
-      - name: Download GLOBAL_VARS_FILE
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ env.GLOBAL_VARS_FILE }}
-
-      - name: Import required vars from GLOBAL_VARS_FILE into local env
-        shell: bash
-        run: |
-          source ${GLOBAL_VARS_FILE}
-          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" | tee --append ${GITHUB_ENV}
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set up Docker Build
-        uses: docker/setup-buildx-action@v3
-          
-      - name: Build and push
-        uses: docker/build-push-action@v5.1.0
-        with:
-          context: "{{defaultContext}}:.github/dockerfiles/base"
-          push: true
-          tags: ${{ env.BASEIMAGE_URL }}
-#          cache-from: type=gha
-#          cache-to: type=gha,mode=max
-        
-  build_slurm_build_image:
-    name: Build slurm build docker image
-    runs-on: ubuntu-latest
-    needs: build_base_build-image
-    steps:
-
-      - name: Download GLOBAL_VARS_FILE
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ env.GLOBAL_VARS_FILE }}
-
-      - name: Import required vars from GLOBAL_VARS_FILE into local env
-        shell: bash
-        run: |
-          source ${GLOBAL_VARS_FILE}
-          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" | tee --append ${GITHUB_ENV}
-          echo "SLURMIMAGE_URL=${SLURMIMAGE_URL}" | tee --append ${GITHUB_ENV}
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set up Docker Build
-        uses: docker/setup-buildx-action@v3
-        
-      - name: Build and push
-        uses: docker/build-push-action@v5.1.0
-        with:
-          build-args: |
-            NVML_VERSION=${{ env.NVML_VERSION }}
-            BASE_IMAGE=${{ env.BASEIMAGE_URL }}
-          context: "{{defaultContext}}:.github/dockerfiles/slurm"
-          push: true
-          tags: ${{ env.SLURMIMAGE_URL }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-  build_pmix_build_image:
-    name: Build pmix build docker image
-    runs-on: ubuntu-latest
-    needs: build_base_build-image
-    steps:
-
-      - name: Download GLOBAL_VARS_FILE
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ env.GLOBAL_VARS_FILE }}
-
-      - name: Import required vars from GLOBAL_VARS_FILE into local env
-        shell: bash
-        run: |
-          source ${GLOBAL_VARS_FILE}
-          echo "BASEIMAGE_URL=${BASEIMAGE_URL}" | tee --append ${GITHUB_ENV}
-          echo "PMIXIMAGE_URL=${PMIXIMAGE_URL}" | tee --append ${GITHUB_ENV}
-            
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set up Docker Build
-        uses: docker/setup-buildx-action@v3
-        
-      - name: Build and push
-        uses: docker/build-push-action@v5.1.0
-        with:
-          build-args: |
-            BASE_IMAGE=${{ env.BASEIMAGE_URL }}
-          context: "{{defaultContext}}:.github/dockerfiles/pmix"
-          push: true
-          tags: ${{ env.PMIXIMAGE_URL }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
   build_pmix:
     name: Build pmix
