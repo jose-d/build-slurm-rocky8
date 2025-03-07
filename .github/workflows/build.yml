@@ -9,11 +9,15 @@ env:
   IMG_REPO_URL: ghcr.io/jose-d/build-slurm-rocky8
   # version of openpmix and slurm to download and build together
   PMIX_VERSION: 5.0.6
-  SLURM_VERSION: 24.11.2
+  SLURM_VERSION: 24.11.3
   # version of CUDA to take NVML library from:
   NVML_VERSION: 12-6
   # files used as cache for variables sharing
   GLOBAL_VARS_FILE: global_vars.txt
+  # configure build Docker images
+  PMIXIMAGE_URL: ghcr.io/jose-d/docker-images-rocky8:pmiximg_20250227144153
+  SLURMIMAGE_URL: ghcr.io/jose-d/docker-images-rocky8:slurmimg_20250227144153
+  
 jobs:
 
   prolog:
@@ -25,10 +29,7 @@ jobs:
         run: |
           # this is the date-based identifier for this release:
           RELTAG="$(date +%Y%m%d%H%M%S)"
-          
-          PMIXIMAGE_URL=ghcr.io/jose-d/docker-images-rocky8:pmiximg_20250227144153
-          SLURMIMAGE_URL=ghcr.io/jose-d/docker-images-rocky8:slurmimg_20250227144153
-          
+           
           touch $GLOBAL_VARS_FILE
 
           echo "RELTAG=${RELTAG}" | tee --append $GLOBAL_VARS_FILE $GITHUB_STEP_SUMMARY
