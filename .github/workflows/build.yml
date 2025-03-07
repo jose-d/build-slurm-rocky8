@@ -15,8 +15,14 @@ env:
   # files used as cache for variables sharing
   GLOBAL_VARS_FILE: global_vars.txt
   # configure build Docker images
-  PMIXIMAGE_URL: ghcr.io/jose-d/docker-images-rocky8:pmiximg_20250227144153
-  SLURMIMAGE_URL: ghcr.io/jose-d/docker-images-rocky8:slurmimg_20250227144153
+  
+  #PMIXIMAGE_URL: ghcr.io/jose-d/docker-images-rocky8:pmiximg_20250227144153
+  #SLURMIMAGE_URL: ghcr.io/jose-d/docker-images-rocky8:slurmimg_20250227144153
+  
+  PMIXIMAGE_URL: ghcr.io/jose-d/docker-images-rocky8:pmiximg_20250307102934
+  SLURMIMAGE_URL: ghcr.io/jose-d/docker-images-rocky8:slurmimg_20250307102934
+
+  
   
 jobs:
 
